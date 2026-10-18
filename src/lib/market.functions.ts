@@ -77,3 +77,14 @@ export const getCompanyDetail = createServerFn({ method: "POST" })
       return { company: null, error: "Company data unavailable right now" };
     }
   });
+
+// Lets an open browser drive syncing (in addition to the scheduled job).
+// Takes no input and is globally throttled: does nothing if any stock was refreshed in the last 10 seconds.
+export const pumpSync = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: latest } = await supabaseAdmin.from("stocks").select("updated_at").not("updated_at", "is", null).order("updated_at", { ascending: false }).limit(1).maybeSingle();
+  if (latest?.updated_at && Date.now() - new Date(latest.updated_at).getTime() < 10_000) return { skipped: true, updated: 0 };
+  const { refreshBatch } = await import("./refresh.server");
+  try { return { skipped: false, ...(await refreshBatch()) }; }
+  catch (e) { console.error(e); return { skipped: false, updated: 0 }; }
+});
