@@ -30,8 +30,8 @@ const s = (
   fii: number, fiiPrev: number, dii: number, diiPrev: number,
   c: number[], p: number[],
 ): Stock => {
-  const f = (a: number[]): Fundamentals => ({
-    revenue: a[0], netProfit: a[1], eps: a[2], roe: a[3], opm: a[4], debtToEquity: a[5], pe: a[6], bookValue: a[7],
+  const f = ([a0, a1, a2, a3, a4, a5, a6, a7]: number[]): Fundamentals => ({
+    revenue: a0!, netProfit: a1!, eps: a2!, roe: a3!, opm: a4!, debtToEquity: a5!, pe: a6!, bookValue: a7!,
   });
   return { symbol, name, exchange: "NSE & BSE", sector, price, marketCap: MCAP[symbol] ?? 0, fii, fiiPrev, dii, diiPrev, current: f(c), previous: f(p) };
 };
