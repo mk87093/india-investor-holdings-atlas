@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResultsRouteImport } from './routes/results'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsRoute = ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StockSymbolRoute = StockSymbolRouteImport.update({
@@ -25,27 +31,31 @@ const StockSymbolRoute = StockSymbolRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/results': typeof ResultsRoute
   '/stock/$symbol': typeof StockSymbolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/results': typeof ResultsRoute
   '/stock/$symbol': typeof StockSymbolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/results': typeof ResultsRoute
   '/stock/$symbol': typeof StockSymbolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/stock/$symbol'
+  fullPaths: '/' | '/results' | '/stock/$symbol'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/stock/$symbol'
-  id: '__root__' | '/' | '/stock/$symbol'
+  to: '/' | '/results' | '/stock/$symbol'
+  id: '__root__' | '/' | '/results' | '/stock/$symbol'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ResultsRoute: typeof ResultsRoute
   StockSymbolRoute: typeof StockSymbolRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results': {
+      id: '/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stock/$symbol': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ResultsRoute: ResultsRoute,
   StockSymbolRoute: StockSymbolRoute,
 }
 export const routeTree = rootRouteImport
