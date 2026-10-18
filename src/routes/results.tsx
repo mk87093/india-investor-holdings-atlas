@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { resultsCalendar } from "@/lib/stocks";
 import { Delta } from "@/components/Delta";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getLiveQuotes } from "@/lib/yahoo.functions";
+import { STOCKS } from "@/lib/stocks";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -19,11 +23,23 @@ export const Route = createFileRoute("/results")({
 const TODAY = new Date().toISOString().slice(0, 10);
 const fmt = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
+type Row = ReturnType<typeof resultsCalendar>[number] & { isLive: boolean };
+
 function Results() {
-  const rows = resultsCalendar();
+  const fetchQ = useServerFn(getLiveQuotes);
+  const { data } = useQuery({
+    queryKey: ["quotes-all"],
+    queryFn: () => fetchQ({ data: { symbols: STOCKS.map((s) => s.symbol) } }),
+    staleTime: 10 * 60 * 1000,
+    refetchInterval: 30 * 60 * 1000,
+  });
+  const live = data?.quotes ?? {};
+  const rows = resultsCalendar()
+    .map((r) => ({ ...r, date: live[r.symbol]?.resultDate ?? r.date, isLive: !!live[r.symbol]?.resultDate }))
+    .sort((a, b) => a.date.localeCompare(b.date));
   const upcoming = rows.filter((r) => r.date >= TODAY);
   const declared = rows.filter((r) => r.date < TODAY).reverse();
-  const Table = ({ title, list, done }: { title: string; list: typeof rows; done: boolean }) => (
+  const Table = ({ title, list, done }: { title: string; list: Row[]; done: boolean }) => (
     <section className="mb-10">
       <h2 className="mb-3 text-xl font-semibold">{title} · {list.length}</h2>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
@@ -36,7 +52,7 @@ function Results() {
           <tbody>
             {list.map((r) => (
               <tr key={r.symbol} className="border-b border-border/50 last:border-0 hover:bg-accent">
-                <td className="p-3 font-mono">{fmt(r.date)}</td>
+                <td className="p-3 font-mono">{fmt(r.date)}{!r.isLive && <span className="ml-1 text-xs text-muted-foreground">*</span>}</td>
                 <td className="p-3"><Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-semibold text-primary">{r.symbol}</Link>
                   <span className="block text-xs text-muted-foreground">{r.name}</span></td>
                 <td className="p-3 text-muted-foreground">{r.sector}</td>
@@ -55,7 +71,7 @@ function Results() {
     <main className="mx-auto max-w-6xl px-4 py-10">
       <Link to="/" className="text-sm text-muted-foreground hover:text-primary">← Holdings</Link>
       <h1 className="mb-1 mt-3 text-3xl font-bold">Results Calendar</h1>
-      <p className="mb-8 text-sm text-muted-foreground">Q2 FY27 (Jul–Sep 2026) result dates. Sample data.</p>
+      <p className="mb-8 text-sm text-muted-foreground">Result dates update automatically from Yahoo Finance. * = estimate (no live date). Revenue/profit columns are sample data.</p>
       <Table title="Upcoming results" list={upcoming} done={false} />
       <Table title="Already declared" list={declared} done />
     </main>
