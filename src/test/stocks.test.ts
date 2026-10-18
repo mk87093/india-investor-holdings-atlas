@@ -28,3 +28,12 @@ describe("shareholding parser", () => {
     expect(t.rows["DIIs"]).toEqual([20.46, 21.1]);
   });
 });
+
+import { syncStatus } from "@/lib/market.functions";
+describe("sync status", () => {
+  it("estimates completion at 5 stocks per minute", () => {
+    const s = syncStatus(2605, 2500, 10);
+    expect(s.synced).toBe(95);
+    expect(s.etaMinutes).toBe(500);
+  });
+});

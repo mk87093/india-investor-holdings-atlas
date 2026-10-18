@@ -21,6 +21,12 @@ function publicDb() {
   });
 }
 
+export const STOCKS_PER_MINUTE = 5;
+export function syncStatus(total: number, pending: number, failed: number) {
+  const minutes = Math.ceil(pending / STOCKS_PER_MINUTE);
+  return { total, pending, failed, synced: total - pending - failed, etaMinutes: minutes };
+}
+
 const COLS = "symbol,name,sector,industry,price,market_cap_cr,quarter,fii,fii_prev,dii,dii_prev,result_quarter,sales,sales_yoy,profit,profit_yoy,result_date,updated_at";
 
 // All stocks that have shareholding data, from the database (refreshed by the background job).
@@ -33,9 +39,17 @@ export const getMarketOverview = createServerFn({ method: "GET" }).handler(async
     out.push(...(data as typeof out));
     if (!data || data.length < 1000) break;
   }
-  const { count } = await db.from("stocks").select("symbol", { count: "exact", head: true });
+  const head = () => db.from("stocks").select("symbol", { count: "exact", head: true });
+  const PLACEHOLDER = "2001-01-01T00:00:00Z"; // never-synced rows carry null or a year-2000 timestamp
+  const [all, pending, failed] = await Promise.all([
+    head(),
+    head().or(`updated_at.is.null,updated_at.lt.${PLACEHOLDER}`),
+    head().gte("updated_at", PLACEHOLDER).not("last_error", "is", null),
+  ]);
+  const total = all.count ?? 0, p = pending.count ?? 0, f = failed.count ?? 0;
   return {
-    total: count ?? 0,
+    total,
+    sync: syncStatus(total, p, f),
     rows: out.map((r) => ({
       symbol: r.symbol, name: r.name, sector: r.sector ?? "Other", industry: r.industry,
       price: r.price, marketCapCr: r.market_cap_cr, quarter: r.quarter,
