@@ -10,7 +10,7 @@ const SYM = z.string().regex(/^[A-Z0-9&-]{1,20}$/);
 export const getMarketOverview = createServerFn({ method: "GET" }).handler(async () => {
   const symbols = UNIVERSE.map((u) => u.symbol);
   const [companies, quotes] = await Promise.all([
-    mapLimit(symbols, 6, async (s) => {
+    mapLimit(symbols, 2, async (s) => {
       try { const c = await fetchCompany(s); return c ? summarize(c) : null; }
       catch (e) { console.error(s, e); return null; }
     }),

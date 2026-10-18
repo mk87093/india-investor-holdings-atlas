@@ -51,11 +51,16 @@ export function parseRatios(html: string) {
   return out;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function getHtml(url: string) {
-  const r = await fetch(url, { headers: { "User-Agent": UA, Accept: "text/html" } });
-  if (r.status === 404) return null;
-  if (!r.ok) throw new Error(`screener.in request failed [${r.status}]`);
-  return r.text();
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const r = await fetch(url, { headers: { "User-Agent": UA, Accept: "text/html" } });
+    if (r.status === 404) return null;
+    if (r.status === 429) { await sleep(2000 * (attempt + 1)); continue; }
+    if (!r.ok) throw new Error(`screener.in request failed [${r.status}]`);
+    return r.text();
+  }
+  throw new Error("screener.in rate limited [429]");
 }
 
 export async function fetchCompany(symbol: string): Promise<Company | null> {
