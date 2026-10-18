@@ -98,7 +98,7 @@ function StockPage() {
           <h2 className="mb-1 mt-10 text-xl font-semibold">Quarterly results — {qt.headers.at(-1)}</h2>
           <p className="mb-3 text-sm text-muted-foreground">Compared with previous quarter ({qt.headers.at(-2)}){qt.headers.length >= 5 ? ` and same quarter last year (${qt.headers.at(-5)})` : ""}. ₹ Cr unless noted.</p>
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {Object.entries(qt.rows).filter(([k]) => k !== "Raw PDF").map(([k, v]) => {
+            {Object.entries(qt.rows).filter(([k, v]) => k !== "Raw PDF" && v.at(-1) != null).map(([k, v]) => {
               const cur = v.at(-1) ?? null, prevQ = v.at(-2) ?? null, ly = v.length >= 5 ? v.at(-5) ?? null : null;
               const base = ly ?? prevQ;
               const isPct = k.includes("%");
