@@ -1,6 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { resultDate, findStock, change, pctChange, type Fundamentals } from "@/lib/stocks";
 import { Delta } from "@/components/Delta";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getLiveSummary } from "@/lib/yahoo.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/stock/$symbol")({
@@ -61,7 +64,7 @@ function StockPage() {
         ))}
       </section>
 
-      <h2 className="mb-3 mt-10 text-xl font-semibold">Fundamentals — current vs previous year</h2>
+      <h2 className="mb-3 mt-10 text-xl font-semibold">Fundamentals — current vs previous year (sample)</h2>
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {METRICS.map((m) => {
           const cur = s.current[m.key], prev = s.previous[m.key];
@@ -88,5 +91,62 @@ function StockPage() {
       </section>
       <p className="mt-4 text-xs text-muted-foreground">Green = improved, red = worsened (for Debt/Equity and P/E, lower is better).</p>
     </main>
+  );
+}
+
+function LivePanel({ symbol, fallbackDate }: { symbol: string; fallbackDate: string }) {
+  const fetchLive = useServerFn(getLiveSummary);
+  const { data, isLoading } = useQuery({
+    queryKey: ["live", symbol],
+    queryFn: () => fetchLive({ data: { symbol } }),
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+  });
+  const L = data?.summary;
+  if (isLoading) return <p className="mt-6 text-sm text-muted-foreground">Loading live data from Yahoo Finance…</p>;
+  if (!L) return <p className="mt-6 text-sm text-muted-foreground">Live data unavailable. Next result (estimate): {fallbackDate}</p>;
+  const tiles: [string, number | null, string, boolean | null][] = [
+    ["Revenue growth YoY", L.revenueGrowth, "%", true],
+    ["Profit growth YoY", L.earningsGrowth, "%", true],
+    ["Net margin", L.profitMargin, "%", null],
+    ["Operating margin", L.operatingMargin, "%", null],
+    ["ROE", L.roe, "%", null],
+    ["Debt / Equity", L.debtToEquity, "", null],
+    ["EPS (TTM, ₹)", L.eps, "", null],
+    ["P/E", L.pe, "", null],
+    ["Book value (₹)", L.bookValue, "", null],
+    ["Institutions hold", L.institutionsPct, "%", null],
+    ["Promoters hold", L.promotersPct, "%", null],
+    ["Revenue TTM (₹ Cr)", L.revenueCr, "", null],
+  ];
+  return (
+    <section className="mt-6 rounded-xl border border-primary/40 bg-card p-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-widest text-primary">Live · Yahoo Finance</p>
+          <p className="mt-1 font-mono text-3xl font-bold">₹{L.price?.toLocaleString("en-IN") ?? "—"}</p>
+          {L.changePct != null && <Delta value={L.changePct} suffix="%" className="mt-1" />}
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground">Next result date{L.resultEstimated ? " (estimated)" : ""}</p>
+          <p className="font-mono text-xl font-semibold text-primary">{L.resultDate ?? fallbackDate}</p>
+          {L.marketCapCr && <p className="text-xs text-muted-foreground">M.Cap ₹{L.marketCapCr.toLocaleString("en-IN")} Cr</p>}
+        </div>
+      </div>
+      <div className="mt-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+        {tiles.map(([label, v, u, signed]) => {
+          const tone = v == null ? "" : (signed || label.includes("margin") || label === "ROE") ? (v >= 0 ? "border-gain/50 bg-gain/10" : "border-loss/50 bg-loss/10") : "border-border";
+          return (
+            <div key={label} className={cn("rounded-lg border p-3", tone || "border-border")}>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className={cn("font-mono text-lg font-semibold", v != null && signed && (v >= 0 ? "text-gain" : "text-loss"))}>
+                {v == null ? "—" : `${signed && v > 0 ? "+" : ""}${v.toLocaleString("en-IN")}${u}`}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-3 text-xs text-muted-foreground">Updates automatically every 5 minutes. FII/DII split below is sample data — Yahoo doesn't publish it.</p>
+    </section>
   );
 }
