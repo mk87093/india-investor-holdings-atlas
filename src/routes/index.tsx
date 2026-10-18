@@ -36,6 +36,7 @@ function Index() {
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-primary">NSE · BSE</p>
           <h1 className="text-3xl font-bold tracking-tight">Institutional Holdings</h1>
+          <Link to="/results" className="mt-2 inline-block text-sm font-semibold text-primary hover:underline">Results calendar →</Link>
           <p className="text-sm text-muted-foreground">Ranked by FII holding %. Change vs previous quarter. Sample data.</p>
         </div>
         <div className="flex flex-wrap gap-2">

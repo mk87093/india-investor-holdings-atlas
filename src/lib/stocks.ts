@@ -140,3 +140,19 @@ export const sectorStats = () => {
     .map((e) => ({ sector: e.sector, count: e.n, fii: +(e.fii / e.n).toFixed(2), dii: +(e.dii / e.n).toFixed(2) }))
     .sort((a, b) => b.fii - a.fii);
 };
+
+// Sample results calendar for Q2 FY27 (Jul–Sep 2026), declared Oct–Nov 2026.
+export const resultDate = (sym: string) => {
+  let h = 0;
+  for (const ch of sym) h = (h * 31 + ch.charCodeAt(0)) % 1000;
+  const d = new Date(Date.UTC(2026, 9, 10));
+  d.setUTCDate(d.getUTCDate() + (h % 40));
+  return d.toISOString().slice(0, 10);
+};
+export const resultsCalendar = () =>
+  STOCKS.map((x) => ({
+    ...x,
+    date: resultDate(x.symbol),
+    profitGrowth: pctChange(x.current.netProfit, x.previous.netProfit),
+    revenueGrowth: pctChange(x.current.revenue, x.previous.revenue),
+  })).sort((a, b) => a.date.localeCompare(b.date));
