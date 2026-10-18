@@ -36,7 +36,7 @@ function Table({ title, list }: { title: string; list: OverviewRow[] }) {
               const ry = yoy(r.sales, r.salesYoY), py = yoy(r.profit, r.profitYoY);
               return (
                 <tr key={r.symbol} className="border-b border-border/50 last:border-0 hover:bg-accent">
-                  <td className="p-3 font-mono">{r.resultDate ? fmt(r.resultDate) : "Not announced"}</td>
+                  <td className="p-3 font-mono">{r.resultDate ? fmt(r.resultDate) : "—"}</td>
                   <td className="p-3"><Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-semibold text-primary">{r.symbol}</Link>
                     <span className="block text-xs text-muted-foreground">{r.name}</span></td>
                   <td className="p-3 text-muted-foreground">{r.resultQuarter ?? "—"}</td>
@@ -57,8 +57,8 @@ function Table({ title, list }: { title: string; list: OverviewRow[] }) {
 function Results() {
   const { data, isLoading } = useOverview();
   const today = new Date().toISOString().slice(0, 10);
-  const rows = [...(data ?? [])].sort((a, b) => (a.resultDate ?? "9999").localeCompare(b.resultDate ?? "9999"));
-  const upcoming = rows.filter((r) => !r.resultDate || r.resultDate >= today);
+  const rows = [...(data?.rows ?? [])].sort((a, b) => (a.resultDate ?? "9999").localeCompare(b.resultDate ?? "9999"));
+  const upcoming = rows.filter((r) => r.resultDate && r.resultDate >= today);
   const declared = rows.filter((r) => r.resultDate && r.resultDate < today).reverse();
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">

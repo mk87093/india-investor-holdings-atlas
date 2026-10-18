@@ -1,17 +1,19 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { findRef, pctChange } from "@/lib/stocks";
-import { getCompanyDetail } from "@/lib/market.functions";
+import { pctChange } from "@/lib/stocks";
+import { getCompanyDetail, getStockRef } from "@/lib/market.functions";
 import { getLiveSummary } from "@/lib/yahoo.functions";
 import { Delta } from "@/components/Delta";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/stock/$symbol")({
-  loader: ({ params }) => {
-    const s = findRef(params.symbol);
+  loader: async ({ params }) => {
+    const sym = params.symbol.toUpperCase();
+    if (!/^[A-Z0-9&-]{1,20}$/.test(sym)) throw notFound();
+    const s = await getStockRef({ data: { symbol: sym } });
     if (!s) throw notFound();
-    return s;
+    return { ...s, sector: s.sector ?? s.industry ?? "Equity" };
   },
   head: ({ loaderData }) => ({
     meta: [
