@@ -44,10 +44,9 @@ function StockPage() {
           <p className="font-mono text-xs uppercase tracking-widest text-primary">{s.exchange} · {s.sector}</p>
           <h1 className="text-3xl font-bold">{s.name}</h1>
           <p className="font-mono text-muted-foreground">{s.symbol}</p>
-          <p className="mt-1 text-sm">Next result: <span className="font-mono font-semibold text-primary">{resultDate(s.symbol)}</span></p>
         </div>
-        <p className="font-mono text-3xl font-semibold">₹{s.price.toLocaleString("en-IN")}</p>
       </div>
+      <LivePanel symbol={s.symbol} fallbackDate={resultDate(s.symbol)} />
 
       <section className="mt-8 grid gap-4 sm:grid-cols-2">
         {[["FII Holding", s.fii, s.fiiPrev], ["DII Holding", s.dii, s.diiPrev]].map(([l, c, p]) => (
