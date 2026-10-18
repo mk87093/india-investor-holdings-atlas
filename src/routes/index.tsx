@@ -67,9 +67,10 @@ function Index() {
 
       {data && (
         <>
+          <SyncPanel s={data.sync} />
           <SectorChart rows={all} active={sector} onSelect={(x) => { setSector(x); setLimit(100); setTimeout(() => document.getElementById("list")?.scrollIntoView({ behavior: "smooth" }), 50); }} />
           <div id="list" className="mb-3 flex items-center justify-between">
-            <h2 className="font-semibold">{sector === "all" ? "All stocks" : sector} · {rows.length} stocks{data.total > all.length ? ` (${all.length} of ${data.total} NSE stocks loaded so far — updating in background)` : ""}</h2>
+            <h2 className="font-semibold">{sector === "all" ? "All stocks" : sector} · {rows.length} stocks</h2>
             {sector !== "all" && <button onClick={() => setSector("all")} className="text-sm text-primary hover:underline">Show all sectors</button>}
           </div>
           <div className="overflow-x-auto rounded-xl border border-border bg-card">
@@ -111,5 +112,27 @@ function Index() {
         </>
       )}
     </main>
+  );
+}
+
+function SyncPanel({ s }: { s: { total: number; pending: number; synced: number; failed: number; etaMinutes: number } }) {
+  const pct = s.total ? Math.round(((s.synced + s.failed) / s.total) * 100) : 0;
+  const eta = s.pending === 0 ? "Complete" : s.etaMinutes < 60 ? `~${s.etaMinutes} min` : `~${Math.floor(s.etaMinutes / 60)}h ${s.etaMinutes % 60}m`;
+  const done = s.pending === 0 ? null : new Date(Date.now() + s.etaMinutes * 60000).toLocaleString("en-IN", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" });
+  const box = "rounded-lg border p-3";
+  return (
+    <section className="mb-6 rounded-xl border border-border bg-card p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="font-semibold">Data sync · {s.total.toLocaleString("en-IN")} NSE stocks</h2>
+        <p className="text-sm text-muted-foreground">Estimated completion: <span className="font-mono font-semibold text-primary">{eta}</span>{done ? ` (${done})` : ""}</p>
+      </div>
+      <div className="mb-3 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full bg-primary" style={{ width: `${pct}%` }} /></div>
+      <div className="grid grid-cols-3 gap-3 text-center">
+        <div className={box + " border-border"}><p className="text-xs text-muted-foreground">Pending</p><p className="font-mono text-xl font-bold">{s.pending.toLocaleString("en-IN")}</p></div>
+        <div className={box + " border-gain/50 bg-gain/10"}><p className="text-xs text-muted-foreground">Synced</p><p className="font-mono text-xl font-bold text-gain">{s.synced.toLocaleString("en-IN")}</p></div>
+        <div className={box + " border-loss/50 bg-loss/10"}><p className="text-xs text-muted-foreground">Failed</p><p className="font-mono text-xl font-bold text-loss">{s.failed.toLocaleString("en-IN")}</p></div>
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">Updates {"5"} stocks per minute. Failed = stock not found or data unavailable; retried in the next cycle.</p>
+    </section>
   );
 }
