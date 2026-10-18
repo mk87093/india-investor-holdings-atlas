@@ -1,10 +1,12 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { sectorStats } from "@/lib/stocks";
 
-export function SectorChart({ active, onSelect }: { active: string; onSelect: (s: string) => void }) {
-  const data = sectorStats();
+type Row = { sector: string; fii: number | null; dii: number | null };
+
+export function SectorChart({ rows, active, onSelect }: { rows: Row[]; active: string; onSelect: (s: string) => void }) {
+  const data = sectorStats(rows);
   const click = (d: unknown) => {
-    const s = (d as { sector?: string; payload?: { sector?: string } });
+    const s = d as { sector?: string; payload?: { sector?: string } };
     const sec = s.sector ?? s.payload?.sector;
     if (sec) onSelect(sec === active ? "all" : sec);
   };
