@@ -1,38 +1,57 @@
 import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import { UNIVERSE } from "./stocks";
-import { fetchCompany, mapLimit, summarize } from "./screener.server";
-import { fetchQuotes } from "./yahoo.server";
+import type { Database } from "@/integrations/supabase/types";
+import { fetchCompany } from "./screener.server";
 
 const SYM = z.string().regex(/^[A-Z0-9&-]{1,20}$/);
 
-// All stocks: real FII/DII (latest + previous quarter), market cap, latest quarterly result, next result date.
-export const getMarketOverview = createServerFn({ method: "GET" }).handler(async () => {
-  const symbols = UNIVERSE.map((u) => u.symbol);
-  const [companies, quotes] = await Promise.all([
-    mapLimit(symbols, 2, async (s) => {
-      try { const c = await fetchCompany(s); return c ? summarize(c) : null; }
-      catch (e) { console.error(s, e); return null; }
-    }),
-    fetchQuotes(symbols).catch((e) => { console.error(e); return {} as Awaited<ReturnType<typeof fetchQuotes>>; }),
-  ]);
-  return UNIVERSE.map((u, i) => {
-    const c = companies[i], y = quotes[u.symbol];
-    return {
-      ...u,
-      available: !!c && c.fii != null,
-      price: y?.price ?? c?.price ?? null,
-      marketCapCr: c?.marketCapCr ?? y?.marketCapCr ?? null,
-      quarter: c?.quarter ?? null,
-      fii: c?.fii ?? null, fiiPrev: c?.fiiPrev ?? null,
-      dii: c?.dii ?? null, diiPrev: c?.diiPrev ?? null,
-      resultQuarter: c?.resultQuarter ?? null,
-      sales: c?.sales ?? null, salesYoY: c?.salesYoY ?? null,
-      profit: c?.profit ?? null, profitYoY: c?.profitYoY ?? null,
-      resultDate: y?.resultDate ?? null,
-    };
+function publicDb() {
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+  return createClient<Database>(process.env["SUPABASE_URL"]!, key, {
+    auth: { persistSession: false },
+    global: {
+      fetch: (input, init) => {
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
+      },
+    },
   });
+}
+
+const COLS = "symbol,name,sector,industry,price,market_cap_cr,quarter,fii,fii_prev,dii,dii_prev,result_quarter,sales,sales_yoy,profit,profit_yoy,result_date,updated_at";
+
+// All stocks that have shareholding data, from the database (refreshed by the background job).
+export const getMarketOverview = createServerFn({ method: "GET" }).handler(async () => {
+  const db = publicDb();
+  const out: Database["public"]["Tables"]["stocks"]["Row"][] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db.from("stocks").select(COLS).not("fii", "is", null).order("fii", { ascending: false }).range(from, from + 999);
+    if (error) throw new Error(error.message);
+    out.push(...(data as typeof out));
+    if (!data || data.length < 1000) break;
+  }
+  const { count } = await db.from("stocks").select("symbol", { count: "exact", head: true });
+  return {
+    total: count ?? 0,
+    rows: out.map((r) => ({
+      symbol: r.symbol, name: r.name, sector: r.sector ?? "Other", industry: r.industry,
+      price: r.price, marketCapCr: r.market_cap_cr, quarter: r.quarter,
+      fii: r.fii, fiiPrev: r.fii_prev, dii: r.dii, diiPrev: r.dii_prev,
+      resultQuarter: r.result_quarter, sales: r.sales, salesYoY: r.sales_yoy, profit: r.profit, profitYoY: r.profit_yoy,
+      resultDate: r.result_date, updatedAt: r.updated_at,
+    })),
+  };
 });
+
+export const getStockRef = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ symbol: SYM }).parse(d))
+  .handler(async ({ data }) => {
+    const { data: row } = await publicDb().from("stocks").select("symbol,name,sector,industry").eq("symbol", data.symbol).maybeSingle();
+    return row;
+  });
 
 export const getCompanyDetail = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ symbol: SYM }).parse(d))
