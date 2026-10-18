@@ -12,3 +12,12 @@ describe("ranking", () => {
     expect(pctChange(110, 100)).toBeCloseTo(10);
   });
 });
+
+import { capBucket } from "@/lib/stocks";
+describe("market cap buckets", () => {
+  it("buckets by ₹ Cr thresholds", () => {
+    expect(capBucket(600000)).toBe("mega");
+    expect(capBucket(100000)).toBe("large");
+    expect(capBucket(10000)).toBe("mid");
+  });
+});

@@ -16,6 +16,7 @@ export type Stock = {
   exchange: "NSE" | "BSE" | "NSE & BSE";
   sector: string;
   price: number;
+  marketCap: number; // ₹ Cr
   fii: number;
   fiiPrev: number;
   dii: number;
@@ -32,8 +33,22 @@ const s = (
   const f = (a: number[]): Fundamentals => ({
     revenue: a[0], netProfit: a[1], eps: a[2], roe: a[3], opm: a[4], debtToEquity: a[5], pe: a[6], bookValue: a[7],
   });
-  return { symbol, name, exchange: "NSE & BSE", sector, price, fii, fiiPrev, dii, diiPrev, current: f(c), previous: f(p) };
+  return { symbol, name, exchange: "NSE & BSE", sector, price, marketCap: MCAP[symbol] ?? 0, fii, fiiPrev, dii, diiPrev, current: f(c), previous: f(p) };
 };
+
+const MCAP: Record<string, number> = {
+  HDFCBANK: 1308000, ICICIBANK: 893000, AXISBANK: 354000, INFY: 777000, TCS: 1490000, RELIANCE: 1989000,
+  BHARTIARTL: 985000, KOTAKBANK: 354000, LT: 500000, ITC: 585000, SBIN: 725000, HINDUNILVR: 583000,
+  BAJFINANCE: 436000, MARUTI: 388000, SUNPHARMA: 413000,
+};
+
+export const CAP_BUCKETS = [
+  { id: "all", label: "All caps" },
+  { id: "mega", label: "Mega (> ₹5L Cr)" },
+  { id: "large", label: "Large (₹20K–5L Cr)" },
+  { id: "mid", label: "Mid/Small (< ₹20K Cr)" },
+] as const;
+export const capBucket = (mc: number) => (mc > 500000 ? "mega" : mc >= 20000 ? "large" : "mid");
 
 export const STOCKS: Stock[] = [
   s("HDFCBANK", "HDFC Bank", "Banking", 1712, 47.2, 48.0, 35.1, 33.9, [283649, 64062, 84.3, 14.1, 0, 6.8, 20.3, 600], [204666, 46149, 79.1, 16.9, 0, 6.1, 19.5, 579]),
