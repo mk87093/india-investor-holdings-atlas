@@ -1,10 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { resultsCalendar } from "@/lib/stocks";
+import { pctChange } from "@/lib/stocks";
+import { useOverview, type OverviewRow } from "@/lib/use-overview";
 import { Delta } from "@/components/Delta";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getLiveQuotes } from "@/lib/yahoo.functions";
-import { STOCKS } from "@/lib/stocks";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -20,60 +17,56 @@ export const Route = createFileRoute("/results")({
   component: Results,
 });
 
-const TODAY = new Date().toISOString().slice(0, 10);
 const fmt = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const yoy = (a: number | null, b: number | null) => (a == null || b == null ? null : pctChange(a, b));
 
-type Row = ReturnType<typeof resultsCalendar>[number] & { isLive: boolean };
-
-function Results() {
-  const fetchQ = useServerFn(getLiveQuotes);
-  const { data } = useQuery({
-    queryKey: ["quotes-all"],
-    queryFn: () => fetchQ({ data: { symbols: STOCKS.map((s) => s.symbol) } }),
-    staleTime: 10 * 60 * 1000,
-    refetchInterval: 30 * 60 * 1000,
-  });
-  const live = data?.quotes ?? {};
-  const rows = resultsCalendar()
-    .map((r) => ({ ...r, date: live[r.symbol]?.resultDate ?? r.date, isLive: !!live[r.symbol]?.resultDate }))
-    .sort((a, b) => a.date.localeCompare(b.date));
-  const upcoming = rows.filter((r) => r.date >= TODAY);
-  const declared = rows.filter((r) => r.date < TODAY).reverse();
-  const Table = ({ title, list, done }: { title: string; list: Row[]; done: boolean }) => (
+function Table({ title, list }: { title: string; list: OverviewRow[] }) {
+  return (
     <section className="mb-10">
       <h2 className="mb-3 text-xl font-semibold">{title} · {list.length}</h2>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border text-left font-mono text-xs uppercase text-muted-foreground">
-            <tr><th className="p-3">Date</th><th className="p-3">Stock</th><th className="p-3">Sector</th>
-              <th className="p-3 text-right">Revenue (₹ Cr)</th><th className="p-3 text-right">Net Profit (₹ Cr)</th>
-              <th className="p-3 text-right">{done ? "Profit YoY" : "Last Profit YoY"}</th><th className="p-3 text-right">Revenue YoY</th></tr>
+            <tr><th className="p-3">Result date</th><th className="p-3">Stock</th><th className="p-3">Last result</th>
+              <th className="p-3 text-right">Revenue (₹ Cr)</th><th className="p-3 text-right">Revenue YoY</th>
+              <th className="p-3 text-right">Net Profit (₹ Cr)</th><th className="p-3 text-right">Profit YoY</th></tr>
           </thead>
           <tbody>
-            {list.map((r) => (
-              <tr key={r.symbol} className="border-b border-border/50 last:border-0 hover:bg-accent">
-                <td className="p-3 font-mono">{fmt(r.date)}{!r.isLive && <span className="ml-1 text-xs text-muted-foreground">*</span>}</td>
-                <td className="p-3"><Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-semibold text-primary">{r.symbol}</Link>
-                  <span className="block text-xs text-muted-foreground">{r.name}</span></td>
-                <td className="p-3 text-muted-foreground">{r.sector}</td>
-                <td className="p-3 text-right font-mono">{r.current.revenue.toLocaleString("en-IN")}</td>
-                <td className="p-3 text-right font-mono">{r.current.netProfit.toLocaleString("en-IN")}</td>
-                <td className="p-3 text-right"><Delta value={r.profitGrowth} suffix="%" /></td>
-                <td className="p-3 text-right"><Delta value={r.revenueGrowth} suffix="%" /></td>
-              </tr>
-            ))}
+            {list.map((r) => {
+              const ry = yoy(r.sales, r.salesYoY), py = yoy(r.profit, r.profitYoY);
+              return (
+                <tr key={r.symbol} className="border-b border-border/50 last:border-0 hover:bg-accent">
+                  <td className="p-3 font-mono">{r.resultDate ? fmt(r.resultDate) : "Not announced"}</td>
+                  <td className="p-3"><Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-semibold text-primary">{r.symbol}</Link>
+                    <span className="block text-xs text-muted-foreground">{r.name}</span></td>
+                  <td className="p-3 text-muted-foreground">{r.resultQuarter ?? "—"}</td>
+                  <td className="p-3 text-right font-mono">{r.sales?.toLocaleString("en-IN") ?? "—"}</td>
+                  <td className="p-3 text-right">{ry != null && <Delta value={ry} suffix="%" />}</td>
+                  <td className="p-3 text-right font-mono">{r.profit?.toLocaleString("en-IN") ?? "—"}</td>
+                  <td className="p-3 text-right">{py != null && <Delta value={py} suffix="%" />}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
     </section>
   );
+}
+
+function Results() {
+  const { data, isLoading } = useOverview();
+  const today = new Date().toISOString().slice(0, 10);
+  const rows = [...(data ?? [])].sort((a, b) => (a.resultDate ?? "9999").localeCompare(b.resultDate ?? "9999"));
+  const upcoming = rows.filter((r) => !r.resultDate || r.resultDate >= today);
+  const declared = rows.filter((r) => r.resultDate && r.resultDate < today).reverse();
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <Link to="/" className="text-sm text-muted-foreground hover:text-primary">← Holdings</Link>
       <h1 className="mb-1 mt-3 text-3xl font-bold">Results Calendar</h1>
-      <p className="mb-8 text-sm text-muted-foreground">Result dates update automatically from Yahoo Finance. * = estimate (no live date). Revenue/profit columns are sample data.</p>
-      <Table title="Upcoming results" list={upcoming} done={false} />
-      <Table title="Already declared" list={declared} done />
+      <p className="mb-8 text-sm text-muted-foreground">Result dates from Yahoo Finance; last quarterly result vs same quarter last year from screener.in. Updates automatically.</p>
+      {isLoading && <p className="text-muted-foreground">Loading…</p>}
+      {data && <><Table title="Upcoming results" list={upcoming} /><Table title="Recently declared" list={declared} /></>}
     </main>
   );
 }
