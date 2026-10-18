@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { pumpSync } from "@/lib/market.functions";
 import { CAP_BUCKETS, capBucket, rankByFii } from "@/lib/stocks";
 import { useOverview } from "@/lib/use-overview";
 import { Delta } from "@/components/Delta";
@@ -23,6 +26,18 @@ const fmtPct = (v: number | null) => (v == null ? "—" : `${v.toFixed(2)}%`);
 
 function Index() {
   const { data, isLoading, isError } = useOverview();
+  const pump = useServerFn(pumpSync);
+  const qc = useQueryClient();
+  const pending = data?.sync.pending ?? 0;
+  useEffect(() => {
+    if (!pending) return;
+    let n = 0;
+    const id = setInterval(async () => {
+      const r = await pump().catch(() => null);
+      if (r?.updated && ++n % 4 === 0) qc.invalidateQueries({ queryKey: ["overview"] });
+    }, 12_000);
+    return () => clearInterval(id);
+  }, [pending > 0]);
   const [q, setQ] = useState("");
   const [sector, setSector] = useState("all");
   const [cap, setCap] = useState("all");
@@ -132,7 +147,7 @@ function SyncPanel({ s }: { s: { total: number; pending: number; synced: number;
         <div className={box + " border-gain/50 bg-gain/10"}><p className="text-xs text-muted-foreground">Synced</p><p className="font-mono text-xl font-bold text-gain">{s.synced.toLocaleString("en-IN")}</p></div>
         <div className={box + " border-loss/50 bg-loss/10"}><p className="text-xs text-muted-foreground">Failed</p><p className="font-mono text-xl font-bold text-loss">{s.failed.toLocaleString("en-IN")}</p></div>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Updates {"5"} stocks per minute. Failed = stock not found or data unavailable; retried in the next cycle.</p>
+      <p className="mt-2 text-xs text-muted-foreground">Syncs about 5 stocks per minute in the background, and faster while this page is open. Failed = stock not found or data unavailable; retried in the next cycle.</p>
     </section>
   );
 }
