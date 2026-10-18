@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      stocks: {
+        Row: {
+          dii: number | null
+          dii_prev: number | null
+          fii: number | null
+          fii_prev: number | null
+          industry: string | null
+          last_error: string | null
+          market_cap_cr: number | null
+          name: string
+          price: number | null
+          profit: number | null
+          profit_yoy: number | null
+          quarter: string | null
+          result_date: string | null
+          result_quarter: string | null
+          sales: number | null
+          sales_yoy: number | null
+          sector: string | null
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          dii?: number | null
+          dii_prev?: number | null
+          fii?: number | null
+          fii_prev?: number | null
+          industry?: string | null
+          last_error?: string | null
+          market_cap_cr?: number | null
+          name: string
+          price?: number | null
+          profit?: number | null
+          profit_yoy?: number | null
+          quarter?: string | null
+          result_date?: string | null
+          result_quarter?: string | null
+          sales?: number | null
+          sales_yoy?: number | null
+          sector?: string | null
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          dii?: number | null
+          dii_prev?: number | null
+          fii?: number | null
+          fii_prev?: number | null
+          industry?: string | null
+          last_error?: string | null
+          market_cap_cr?: number | null
+          name?: string
+          price?: number | null
+          profit?: number | null
+          profit_yoy?: number | null
+          quarter?: string | null
+          result_date?: string | null
+          result_quarter?: string | null
+          sales?: number | null
+          sales_yoy?: number | null
+          sector?: string | null
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
