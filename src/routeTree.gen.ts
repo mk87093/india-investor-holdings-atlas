@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
+import { Route as ApiPublicJobsRefreshStocksRouteImport } from './routes/api/public/jobs/refresh-stocks'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,51 @@ const StockSymbolRoute = StockSymbolRouteImport.update({
   path: '/stock/$symbol',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJobsRefreshStocksRoute =
+  ApiPublicJobsRefreshStocksRouteImport.update({
+    id: '/api/public/jobs/refresh-stocks',
+    path: '/api/public/jobs/refresh-stocks',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
   '/stock/$symbol': typeof StockSymbolRoute
+  '/api/public/jobs/refresh-stocks': typeof ApiPublicJobsRefreshStocksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
   '/stock/$symbol': typeof StockSymbolRoute
+  '/api/public/jobs/refresh-stocks': typeof ApiPublicJobsRefreshStocksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
   '/stock/$symbol': typeof StockSymbolRoute
+  '/api/public/jobs/refresh-stocks': typeof ApiPublicJobsRefreshStocksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/results' | '/stock/$symbol'
+  fullPaths:
+    '/' | '/results' | '/stock/$symbol' | '/api/public/jobs/refresh-stocks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/results' | '/stock/$symbol'
-  id: '__root__' | '/' | '/results' | '/stock/$symbol'
+  to: '/' | '/results' | '/stock/$symbol' | '/api/public/jobs/refresh-stocks'
+  id:
+    | '__root__'
+    | '/'
+    | '/results'
+    | '/stock/$symbol'
+    | '/api/public/jobs/refresh-stocks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ResultsRoute: typeof ResultsRoute
   StockSymbolRoute: typeof StockSymbolRoute
+  ApiPublicJobsRefreshStocksRoute: typeof ApiPublicJobsRefreshStocksRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +99,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StockSymbolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/refresh-stocks': {
+      id: '/api/public/jobs/refresh-stocks'
+      path: '/api/public/jobs/refresh-stocks'
+      fullPath: '/api/public/jobs/refresh-stocks'
+      preLoaderRoute: typeof ApiPublicJobsRefreshStocksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +113,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ResultsRoute: ResultsRoute,
   StockSymbolRoute: StockSymbolRoute,
+  ApiPublicJobsRefreshStocksRoute: ApiPublicJobsRefreshStocksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

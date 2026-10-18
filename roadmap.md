@@ -1,7 +1,4 @@
 # Roadmap
-- [x] FII/DII rankings page + stock fundamentals page
-- [x] Sector and market-cap filters on rankings
-- [x] Sector bar chart, click to filter
-- [x] Results calendar page with dates
-- [x] Real data: FII/DII shareholding + quarterly results (screener.in), price & result dates (Yahoo)
-- [ ] Every NSE/BSE stock (2000+) — currently 55 major stocks; scaling needs a stored database + scheduled refresh
+- [x] FII/DII rankings, filters, sector chart, stock pages, results calendar
+- [x] Real data (screener.in + Yahoo)
+- [x] All ~2600 NSE stocks stored in database, refreshed by a background job (5 stocks/minute)

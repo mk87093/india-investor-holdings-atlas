@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { UNIVERSE, CAP_BUCKETS, capBucket, rankByFii } from "@/lib/stocks";
+import { CAP_BUCKETS, capBucket, rankByFii } from "@/lib/stocks";
 import { useOverview } from "@/lib/use-overview";
 import { Delta } from "@/components/Delta";
 import { SectorChart } from "@/components/SectorChart";
@@ -26,14 +26,16 @@ function Index() {
   const [q, setQ] = useState("");
   const [sector, setSector] = useState("all");
   const [cap, setCap] = useState("all");
-  const all = (data ?? []).filter((s) => s.available);
-  const sectors = [...new Set(UNIVERSE.map((s) => s.sector))].sort();
+  const [limit, setLimit] = useState(100);
+  const all = data?.rows ?? [];
+  const sectors = [...new Set(all.map((s) => s.sector))].sort();
   const rows = rankByFii(all).filter(
     (s) =>
       (s.symbol + s.name).toLowerCase().includes(q.toLowerCase()) &&
       (sector === "all" || s.sector === sector) &&
       (cap === "all" || (s.marketCapCr != null && capBucket(s.marketCapCr) === cap)),
   );
+  const shown = rows.slice(0, limit);
   const quarter = all.find((s) => s.quarter)?.quarter;
   const sel = "rounded-md border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary";
 
@@ -60,14 +62,14 @@ function Index() {
         </div>
       </header>
 
-      {isLoading && <p className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">Loading real shareholding data for {UNIVERSE.length} stocks… (first load takes a few seconds)</p>}
+      {isLoading && <p className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">Loading shareholding data…</p>}
       {isError && <p className="rounded-xl border border-loss/50 bg-loss/10 p-8 text-center">Couldn't load live data. Please refresh in a minute.</p>}
 
       {data && (
         <>
-          <SectorChart rows={all} active={sector} onSelect={(x) => { setSector(x); setTimeout(() => document.getElementById("list")?.scrollIntoView({ behavior: "smooth" }), 50); }} />
+          <SectorChart rows={all} active={sector} onSelect={(x) => { setSector(x); setLimit(100); setTimeout(() => document.getElementById("list")?.scrollIntoView({ behavior: "smooth" }), 50); }} />
           <div id="list" className="mb-3 flex items-center justify-between">
-            <h2 className="font-semibold">{sector === "all" ? "All stocks" : sector} · {rows.length} stocks</h2>
+            <h2 className="font-semibold">{sector === "all" ? "All stocks" : sector} · {rows.length} stocks{data.total > all.length ? ` (${all.length} of ${data.total} NSE stocks loaded so far — updating in background)` : ""}</h2>
             {sector !== "all" && <button onClick={() => setSector("all")} className="text-sm text-primary hover:underline">Show all sectors</button>}
           </div>
           <div className="overflow-x-auto rounded-xl border border-border bg-card">
@@ -80,7 +82,7 @@ function Index() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((s, i) => (
+                {shown.map((s, i) => (
                   <tr key={s.symbol} className="border-b border-border/50 last:border-0 hover:bg-accent">
                     <td className="p-3 font-mono text-muted-foreground">{i + 1}</td>
                     <td className="p-3">
@@ -101,6 +103,11 @@ function Index() {
               </tbody>
             </table>
           </div>
+          {rows.length > limit && (
+            <button onClick={() => setLimit(limit + 200)} className="mx-auto mt-4 block rounded-md border border-border bg-card px-4 py-2 text-sm hover:bg-accent">
+              Show more ({rows.length - limit} remaining)
+            </button>
+          )}
         </>
       )}
     </main>

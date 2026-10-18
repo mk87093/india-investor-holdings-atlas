@@ -9,6 +9,8 @@ export type Company = {
   price: number | null;
   marketCapCr: number | null;
   ratios: Record<string, number | null>;
+  sector: string | null;
+  industry: string | null;
   shareholding: Table;
   quarters: Table;
 };
@@ -80,6 +82,8 @@ export async function fetchCompany(symbol: string): Promise<Company | null> {
     price: ratios["Current Price"] ?? null,
     marketCapCr: ratios["Market Cap"] ?? null,
     ratios,
+    sector: strip(html.match(/title="Sector"[^>]*>([^<]+)</)?.[1] ?? "") || null,
+    industry: strip(html.match(/title="Industry"[^>]*>([^<]+)</)?.[1] ?? "") || null,
     shareholding: parseSectionTable(html, "shareholding"),
     quarters,
   };
