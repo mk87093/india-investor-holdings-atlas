@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ranked, change, STOCKS, CAP_BUCKETS, capBucket } from "@/lib/stocks";
 import { Delta } from "@/components/Delta";
+import { SectorChart } from "@/components/SectorChart";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,6 +54,11 @@ function Index() {
         />
         </div>
       </header>
+      <SectorChart active={sector} onSelect={(x) => { setSector(x); setTimeout(() => document.getElementById("list")?.scrollIntoView({ behavior: "smooth" }), 50); }} />
+      <div id="list" className="mb-3 flex items-center justify-between">
+        <h2 className="font-semibold">{sector === "all" ? "All stocks" : sector} · {rows.length} stocks</h2>
+        {sector !== "all" && <button onClick={() => setSector("all")} className="text-sm text-primary hover:underline">Show all sectors</button>}
+      </div>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border text-left font-mono text-xs uppercase text-muted-foreground">
