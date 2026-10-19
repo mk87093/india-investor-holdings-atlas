@@ -62,6 +62,7 @@ function Index() {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <h1 className="text-3xl font-bold tracking-tight">Institutional Holdings</h1>
             <Link to="/results" className="rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold text-primary hover:bg-accent hover:underline">Results calendar →</Link>
+            <Link to="/monthly" className="rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold text-primary hover:bg-accent hover:underline">Monthly FII/DII flows →</Link>
           </div>
           <p className="text-sm text-muted-foreground">
             Ranked by FII holding %. Change vs previous quarter{quarter ? ` · latest: ${quarter}` : ""}. Source: screener.in, Yahoo Finance.
