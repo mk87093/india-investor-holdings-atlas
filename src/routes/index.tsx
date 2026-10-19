@@ -59,8 +59,10 @@ function Index() {
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-primary">NSE · BSE · Live</p>
-          <h1 className="text-3xl font-bold tracking-tight">Institutional Holdings</h1>
-          <Link to="/results" className="mt-2 inline-block text-sm font-semibold text-primary hover:underline">Results calendar →</Link>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">Institutional Holdings</h1>
+            <Link to="/results" className="rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold text-primary hover:bg-accent hover:underline">Results calendar →</Link>
+          </div>
           <p className="text-sm text-muted-foreground">
             Ranked by FII holding %. Change vs previous quarter{quarter ? ` · latest: ${quarter}` : ""}. Source: screener.in, Yahoo Finance.
           </p>
