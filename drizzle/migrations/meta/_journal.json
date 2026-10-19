@@ -8,6 +8,13 @@
       "when": 1792331584831,
       "tag": "0000_create_stocks",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792418157021,
+      "tag": "0001_fii_dii_daily",
+      "breakpoints": true
     }
   ]
 }
