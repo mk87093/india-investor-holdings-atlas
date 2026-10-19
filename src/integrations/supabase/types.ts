@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      fii_dii_daily: {
+        Row: {
+          buy_cr: number | null
+          category: string
+          net_cr: number | null
+          sell_cr: number | null
+          trade_date: string
+          updated_at: string
+        }
+        Insert: {
+          buy_cr?: number | null
+          category: string
+          net_cr?: number | null
+          sell_cr?: number | null
+          trade_date: string
+          updated_at?: string
+        }
+        Update: {
+          buy_cr?: number | null
+          category?: string
+          net_cr?: number | null
+          sell_cr?: number | null
+          trade_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       stocks: {
         Row: {
           dii: number | null

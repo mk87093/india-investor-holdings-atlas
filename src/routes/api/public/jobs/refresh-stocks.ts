@@ -9,6 +9,8 @@ export const Route = createFileRoute("/api/public/jobs/refresh-stocks")({
         const authFailure = await authenticateCronRequest(request);
         if (authFailure) return authFailure;
         try {
+          const { saveDailyFlows } = await import("@/lib/flows.server");
+          await saveDailyFlows().catch((e) => console.error("flows", e));
           const sync = await syncUniverse();
           const res = await refreshBatch();
           return Response.json({ ok: true, ...sync, ...res });
