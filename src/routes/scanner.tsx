@@ -21,7 +21,7 @@ export const Route = createFileRoute("/scanner")({
 const fmt = (v: number, d = 2) => v.toLocaleString("en-IN", { maximumFractionDigits: d, minimumFractionDigits: d });
 const hhmm = (t: number) => { const d = new Date(t * 1000); return `${String(d.getUTCDate()).padStart(2, "0")}/${String(d.getUTCMonth() + 1).padStart(2, "0")} ${d.toISOString().slice(11, 16)}`; };
 
-function Chart({ symbol, side }: { symbol: string; side?: "BUY" | "SELL" }) {
+function Chart({ symbol, side }: { symbol: string; side?: "BUY" | "SELL" | undefined }) {
   const ref = useRef<HTMLDivElement>(null);
   const candlesFn = useServerFn(getCandles);
   const [msg, setMsg] = useState("Loading 5-min chart...");
@@ -96,7 +96,7 @@ function ScannerPage() {
   const sells = withSig.filter((x) => x.s.side === "SELL");
   const rest = rows.filter((r) => !sigs[r.symbol]);
 
-  const Card = ({ r, s }: { r: ScanRow; s?: Signal }) => {
+  const Card = ({ r, s }: { r: ScanRow; s?: Signal | undefined }) => {
     const id = r.symbol + (s?.side ?? "");
     return (
       <div className="rounded-lg border border-border bg-card">
@@ -120,7 +120,7 @@ function ScannerPage() {
     );
   };
 
-  const Section = ({ title, items, tone }: { title: string; items: { r: ScanRow; s?: Signal }[]; tone: string }) => (
+  const Section = ({ title, items, tone }: { title: string; items: { r: ScanRow; s?: Signal | undefined }[]; tone: string }) => (
     <section>
       <h2 className={`mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wider ${tone}`}>{title}<span className="rounded-full bg-muted px-2 text-xs text-muted-foreground">{items.length}</span></h2>
       <div className="space-y-2">{items.length ? items.map((x) => <Card key={x.r.symbol} r={x.r} s={x.s} />) : <p className="text-sm text-muted-foreground">Koi stock nahi.</p>}</div>
