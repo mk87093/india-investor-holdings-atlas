@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MonthlyRouteImport } from './routes/monthly'
 import { Route as ResultsRouteImport } from './routes/results'
+import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as ApiPublicJobsRefreshStocksRouteImport } from './routes/api/public/jobs/refresh-stocks'
 
@@ -30,6 +31,11 @@ const ResultsRoute = ResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScannerRoute = ScannerRouteImport.update({
+  id: '/scanner',
+  path: '/scanner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StockSymbolRoute = StockSymbolRouteImport.update({
   id: '/stock/$symbol',
   path: '/stock/$symbol',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/monthly': typeof MonthlyRoute
   '/results': typeof ResultsRoute
+  '/scanner': typeof ScannerRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/jobs/refresh-stocks': typeof ApiPublicJobsRefreshStocksRoute
 }
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/monthly': typeof MonthlyRoute
   '/results': typeof ResultsRoute
+  '/scanner': typeof ScannerRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/jobs/refresh-stocks': typeof ApiPublicJobsRefreshStocksRoute
 }
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/monthly': typeof MonthlyRoute
   '/results': typeof ResultsRoute
+  '/scanner': typeof ScannerRoute
   '/stock/$symbol': typeof StockSymbolRoute
   '/api/public/jobs/refresh-stocks': typeof ApiPublicJobsRefreshStocksRoute
 }
@@ -70,6 +79,7 @@ export interface FileRouteTypes {
     | '/'
     | '/monthly'
     | '/results'
+    | '/scanner'
     | '/stock/$symbol'
     | '/api/public/jobs/refresh-stocks'
   fileRoutesByTo: FileRoutesByTo
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/monthly'
     | '/results'
+    | '/scanner'
     | '/stock/$symbol'
     | '/api/public/jobs/refresh-stocks'
   id:
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/'
     | '/monthly'
     | '/results'
+    | '/scanner'
     | '/stock/$symbol'
     | '/api/public/jobs/refresh-stocks'
   fileRoutesById: FileRoutesById
@@ -92,6 +104,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MonthlyRoute: typeof MonthlyRoute
   ResultsRoute: typeof ResultsRoute
+  ScannerRoute: typeof ScannerRoute
   StockSymbolRoute: typeof StockSymbolRoute
   ApiPublicJobsRefreshStocksRoute: typeof ApiPublicJobsRefreshStocksRoute
 }
@@ -119,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/scanner': {
+      id: '/scanner'
+      path: '/scanner'
+      fullPath: '/scanner'
+      preLoaderRoute: typeof ScannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stock/$symbol': {
       id: '/stock/$symbol'
       path: '/stock/$symbol'
@@ -140,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MonthlyRoute: MonthlyRoute,
   ResultsRoute: ResultsRoute,
+  ScannerRoute: ScannerRoute,
   StockSymbolRoute: StockSymbolRoute,
   ApiPublicJobsRefreshStocksRoute: ApiPublicJobsRefreshStocksRoute,
 }
