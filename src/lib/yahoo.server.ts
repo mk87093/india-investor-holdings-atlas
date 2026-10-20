@@ -32,6 +32,22 @@ async function yget(path: string): Promise<any> {
 }
 
 export const ySym = (sym: string) => `${sym}.NS`;
+
+// Raw quote rows, cached 50s (used by the live scanner).
+const rawCache = new Map<string, { at: number; data: any[] }>();
+export async function fetchQuotesRaw(symbols: string[]): Promise<any[]> {
+  const key = symbols.join(",");
+  const hit = rawCache.get(key);
+  if (hit && Date.now() - hit.at < 50_000) return hit.data;
+  const s = await getSession();
+  const url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols.map(ySym).join(","))}&crumb=${encodeURIComponent(s.crumb)}`;
+  const r = await fetch(url, { headers: { "User-Agent": UA, Cookie: s.cookie } });
+  if (r.status === 401 || r.status === 403) { session = null; throw new Error("Yahoo auth"); }
+  if (!r.ok) throw new Error(`Yahoo quote failed [${r.status}]`);
+  const data = (await r.json())?.quoteResponse?.result ?? [];
+  rawCache.set(key, { at: Date.now(), data });
+  return data;
+}
 const n = (v: any): number | null => (v && typeof v.raw === "number" ? v.raw : typeof v === "number" ? v : null);
 
 export async function fetchQuotes(symbols: string[]) {
