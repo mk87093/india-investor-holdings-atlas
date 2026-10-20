@@ -32,9 +32,9 @@ function Chart({ symbol, side }: { symbol: string; side?: "BUY" | "SELL" | undef
       if (dead || !ref.current) return;
       if (!data.length) return setMsg("No chart data");
       setMsg("");
-      const css = getComputedStyle(document.documentElement);
       const grid = "rgba(128,128,128,0.12)";
-      chart = lw.createChart(ref.current, { height: 380, width: ref.current.clientWidth || 800, layout: { background: { color: "transparent" }, textColor: css.getPropertyValue("--muted-foreground") || "#999" }, grid: { vertLines: { color: grid }, horzLines: { color: grid } }, timeScale: { timeVisible: true, secondsVisible: false } });
+      // lightweight-charts can't parse oklch theme colors, so use a plain neutral.
+      chart = lw.createChart(ref.current, { height: 380, width: ref.current.clientWidth || 800, layout: { background: { color: "transparent" }, textColor: "#9ca3af" }, grid: { vertLines: { color: grid }, horzLines: { color: grid } }, timeScale: { timeVisible: true, secondsVisible: false } });
       const up = "#22c55e", dn = "#ef4444";
       const s = chart.addSeries(lw.CandlestickSeries, { upColor: up, downColor: dn, borderVisible: false, wickUpColor: up, wickDownColor: dn });
       s.setData(data as any);
