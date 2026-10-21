@@ -16,7 +16,7 @@ export function ScannerNav() {
           to={t.to}
           className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
           activeProps={{ className: "bg-primary text-primary-foreground border-primary" }}
-          activeOptions={t.exact ? { exact: true } : undefined}
+          {...(t.exact ? { activeOptions: { exact: true } } : {})}
         >{t.label}</Link>
       ))}
     </nav>
