@@ -1,17 +1,23 @@
 import { Link } from "@tanstack/react-router";
 
 const tabs = [
-  { to: "/reversal", label: "Reversal Screener" },
-  { to: "/three-candle", label: "3 Candle Scanner" },
-  { to: "/scanner", label: "Cash Scanner" },
+  { to: "/", label: "Institutional Holdings", exact: true },
+  { to: "/reversal", label: "Reversal Screener", exact: false },
+  { to: "/three-candle", label: "3 Candle Scanner", exact: false },
+  { to: "/scanner", label: "Cash Scanner", exact: false },
 ] as const;
 
 export function ScannerNav() {
   return (
     <nav className="mb-4 flex flex-wrap items-center gap-2">
-      <Link to="/" className="mr-2 text-sm text-primary hover:underline">← Holdings</Link>
       {tabs.map((t) => (
-        <Link key={t.to} to={t.to} className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent" activeProps={{ className: "bg-primary text-primary-foreground border-primary" }}>{t.label}</Link>
+        <Link
+          key={t.to}
+          to={t.to}
+          className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+          activeProps={{ className: "bg-primary text-primary-foreground border-primary" }}
+          activeOptions={t.exact ? { exact: true } : undefined}
+        >{t.label}</Link>
       ))}
     </nav>
   );
