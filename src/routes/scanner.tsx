@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { runCashScan, getCandles, type ScanRow } from "@/lib/scanner.functions";
-import { findSignals, lastDay, latestSignal, type Signal, type Candle } from "@/lib/breakout";
+import { lastDay, latestSignal, mithunSignals, type Signal, type Candle } from "@/lib/breakout";
+import { CandleChart } from "@/components/scanners/CandleChart";
+import { ScannerNav } from "@/components/scanners/ScannerNav";
 
 export const Route = createFileRoute("/scanner")({
   head: () => ({
@@ -22,33 +24,13 @@ const fmt = (v: number, d = 2) => v.toLocaleString("en-IN", { maximumFractionDig
 const hhmm = (t: number) => { const d = new Date(t * 1000); return `${String(d.getUTCDate()).padStart(2, "0")}/${String(d.getUTCMonth() + 1).padStart(2, "0")} ${d.toISOString().slice(11, 16)}`; };
 
 function Chart({ symbol, side }: { symbol: string; side?: "BUY" | "SELL" | undefined }) {
-  const ref = useRef<HTMLDivElement>(null);
   const candlesFn = useServerFn(getCandles);
-  const [msg, setMsg] = useState("Loading 5-min chart...");
-  useEffect(() => {
-    let chart: any; let dead = false;
-    (async () => {
-      const [lw, data] = await Promise.all([import("lightweight-charts"), candlesFn({ data: { symbol } })]);
-      if (dead || !ref.current) return;
-      if (!data.length) return setMsg("No chart data");
-      setMsg("");
-      const grid = "rgba(128,128,128,0.12)";
-      // lightweight-charts can't parse oklch theme colors, so use a plain neutral.
-      chart = lw.createChart(ref.current, { height: 380, width: ref.current.clientWidth || 800, layout: { background: { color: "transparent" }, textColor: "#9ca3af" }, grid: { vertLines: { color: grid }, horzLines: { color: grid } }, timeScale: { timeVisible: true, secondsVisible: false } });
-      const up = "#22c55e", dn = "#ef4444";
-      const s = chart.addSeries(lw.CandlestickSeries, { upColor: up, downColor: dn, borderVisible: false, wickUpColor: up, wickDownColor: dn });
-      s.setData(data as any);
-      const sigs = findSignals(lastDay(data as Candle[])).filter((x) => !side || x.side === side);
-      lw.createSeriesMarkers(s, sigs.map((x) => ({ time: x.signalTime as any, position: x.side === "BUY" ? "belowBar" : "aboveBar", color: x.side === "BUY" ? up : dn, shape: x.side === "BUY" ? "arrowUp" : "arrowDown", text: x.side })));
-      sigs.forEach((x) => chart.addSeries(lw.LineSeries, { color: x.side === "BUY" ? up : dn, lineStyle: lw.LineStyle.Dotted, lineWidth: 1, lastValueVisible: false, priceLineVisible: false }).setData([{ time: x.setupTime, value: x.level }, { time: x.signalTime, value: x.level }]));
-      const v = chart.addSeries(lw.HistogramSeries, { priceScaleId: "vol", priceFormat: { type: "volume" } });
-      chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
-      v.setData(data.map((c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "#22c55e55" : "#ef444455" })));
-      chart.timeScale().fitContent();
-    })().catch(() => setMsg("Chart load nahi hua"));
-    return () => { dead = true; chart?.remove(); };
-  }, [symbol, side]);
-  return <div>{msg && <p className="p-6 text-sm text-muted-foreground">{msg}</p>}<div ref={ref} className="w-full" /></div>;
+  const [data, setData] = useState<Candle[] | null>(null);
+  useEffect(() => { candlesFn({ data: { symbol } }).then((d) => setData(lastDay(d))).catch(() => setData([])); }, [symbol]);
+  if (!data) return <p className="p-4 text-xs text-muted-foreground">Loading chart…</p>;
+  const sides = side ? [side] : (["BUY", "SELL"] as const);
+  const markers = sides.flatMap((sd) => mithunSignals(data, sd).map((x, k) => ({ t: x.t, side: sd, level: x.level, label: k ? `${sd}2` : sd })));
+  return <div><CandleChart candles={data} markers={markers} /><p className="px-2 text-xs text-muted-foreground">Today's 5-min chart · 09:15–15:30 IST</p></div>;
 }
 
 function Num({ label, value, set }: { label: string; value: number; set: (n: number) => void }) {
