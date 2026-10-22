@@ -101,13 +101,13 @@ function ScannerPage() {
         <Button onClick={scan} disabled={busy}><RefreshCw className={busy ? "animate-spin motion-reduce:animate-none" : ""} />{busy ? "Scanning..." : "Scan now"}</Button>
       </section>
       {res?.error && <p className="mb-4 rounded-md border border-loss/50 bg-loss/10 p-3 text-sm">{res.error}</p>}
-      {res && <p className="mb-4 font-mono text-xs text-muted-foreground">{rows.length} matches · {withSig.length} breakout{sigLoading ? " (loading...)" : ""} · {res.scanned} cash stocks scanned · {res.fnoExcluded} F&O excluded · {new Date(res.at).toLocaleTimeString("en-IN")}</p>}
+      {res && <p className="mb-4 font-mono text-xs text-muted-foreground">{rows.length} matches · {withSig.length} breakout{sigLoading ? " (loading...)" : ""} · {res.scanned} cash stocks scanned · {res.fnoExcluded} F&O excluded · {new Date(res.at).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata" })} IST</p>}
       {!res && <p className="text-sm text-muted-foreground">Scanning ~2,300 stocks...</p>}
       {res && (
         <div className="grid gap-6 md:grid-cols-2">
           <CashSignalTable title="Buy signals" items={buys} side="BUY" loading={sigLoading} chart={(symbol, side) => <Chart symbol={symbol} side={side} />} />
           <CashSignalTable title="Sell signals" items={sells} side="SELL" loading={sigLoading} chart={(symbol, side) => <Chart symbol={symbol} side={side} />} />
-          <div className="md:col-span-2"><CashSignalTable title="Momentum (no breakout yet)" items={rest.map((r) => ({ r }))} chart={(symbol, side) => <Chart symbol={symbol} side={side} />} /></div>
+          <div className="min-w-0 md:col-span-2"><CashSignalTable title="Momentum (no breakout yet)" items={rest.map((r) => ({ r }))} chart={(symbol, side) => <Chart symbol={symbol} side={side} />} /></div>
         </div>
       )}
     </main>
