@@ -6,3 +6,4 @@
 - [x] Cash scanner Buy/Sell table dashboard matching the supplied reference
 - [x] Shared F&O and non-F&O cash market breadth above all scanners
 - [x] Verify scanner dashboard, breadth and chart flow
+- [ ] Shared dashboard navigation for holdings, results, monthly flows and all three scanners; verify selected data opens below
