@@ -2,13 +2,16 @@ import { createClient } from "@supabase/supabase-js";
 import { fetchQuotesRaw } from "./yahoo.server";
 import type { ScanRow } from "./scanner.functions";
 
-let uni: { symbols: string[]; fnoCount: number; at: number } | null = null;
+let uni: { symbols: string[]; fnoSymbols: string[]; fnoCount: number; at: number } | null = null;
 
 async function fnoSet(): Promise<Set<string>> {
   const r = await fetch("https://nsearchives.nseindia.com/content/fo/fo_mktlots.csv", { headers: { "User-Agent": "Mozilla/5.0" } });
-  if (!r.ok) return new Set();
+  if (!r.ok) throw new Error("F&O universe unavailable");
   const lines = (await r.text()).split("\n").slice(1);
-  return new Set(lines.map((l) => l.split(",")[1]?.trim()).filter((s): s is string => !!s));
+  const indices = new Set(["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY", "NIFTYNXT50", "SYMBOL"]);
+  const symbols = lines.map((l) => l.split(",")[1]?.trim().toUpperCase()).filter((s): s is string => !!s && /^[A-Z0-9&-]+$/.test(s) && !indices.has(s));
+  if (!symbols.length) throw new Error("F&O universe empty");
+  return new Set(symbols);
 }
 
 export async function loadUniverse() {
@@ -27,12 +30,16 @@ export async function loadUniverse() {
   }
   const fno = await fnoSet();
   const symbols = all.filter((s) => !fno.has(s));
-  uni = { symbols, fnoCount: all.length - symbols.length, at: Date.now() };
+  uni = { symbols: [...new Set(symbols)], fnoSymbols: [...fno], fnoCount: all.length - symbols.length, at: Date.now() };
   return uni;
 }
 
 export async function quoteBatch(symbols: string[]): Promise<ScanRow[]> {
   const res = await fetchQuotesRaw(symbols);
+  return scanRows(res);
+}
+
+export function scanRows(res: any[]): ScanRow[] {
   const out: ScanRow[] = [];
   for (const q of res) {
     const price = q.regularMarketPrice, open = q.regularMarketOpen, vol = q.regularMarketVolume;

@@ -3,3 +3,6 @@
 - [x] Real data (screener.in + Yahoo)
 - [x] All ~2600 NSE stocks stored in database, refreshed by a background job (5 stocks/minute)
 - [x] Monthly FII/DII flows page (NSE daily data, summed per month)
+- [x] Cash scanner Buy/Sell table dashboard matching the supplied reference
+- [x] Shared F&O and non-F&O cash market breadth above all scanners
+- [x] Verify scanner dashboard, breadth and chart flow
