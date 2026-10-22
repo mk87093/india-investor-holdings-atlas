@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { DashboardNav } from "@/components/DashboardNav";
 
 function NotFoundComponent() {
   return (
@@ -119,6 +120,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <DashboardNav />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
