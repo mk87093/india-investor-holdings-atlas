@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { MarketBreadth } from "./MarketBreadth";
 
 const tabs = [
   { to: "/", label: "Institutional Holdings", exact: true },
@@ -9,7 +10,7 @@ const tabs = [
 
 export function ScannerNav() {
   return (
-    <nav className="mb-4 flex flex-wrap items-center gap-2">
+    <><nav className="mb-4 flex flex-wrap items-center gap-2">
       {tabs.map((t) => (
         <Link
           key={t.to}
@@ -19,7 +20,7 @@ export function ScannerNav() {
           {...(t.exact ? { activeOptions: { exact: true } } : {})}
         >{t.label}</Link>
       ))}
-    </nav>
+    </nav><MarketBreadth /></>
   );
 }
 

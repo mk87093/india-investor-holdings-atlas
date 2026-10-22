@@ -11,23 +11,15 @@ export type ScanRow = {
 export const runCashScan = createServerFn({ method: "POST" })
   .inputValidator(z.object({ minUp: z.number().min(0).max(50), minTurnoverCr: z.number().min(0), minVolRatio: z.number().min(0) }))
   .handler(async ({ data }) => {
-    const { loadUniverse, quoteBatch } = await import("./scanner.server");
+    const { scanRows } = await import("./scanner.server");
+    const { quoteSnapshot } = await import("./breadth.server");
     try {
-      const { symbols, fnoCount } = await loadUniverse();
-      const rows: ScanRow[] = [];
-      const batches: string[][] = [];
-      for (let i = 0; i < symbols.length; i += 150) batches.push(symbols.slice(i, i + 150));
-      let idx = 0;
-      await Promise.all(Array.from({ length: 4 }, async () => {
-        while (idx < batches.length) {
-          const b = batches[idx++]!;
-          try { rows.push(...(await quoteBatch(b))); } catch (e) { console.error("scan batch", e); }
-        }
-      }));
+      const snapshot = await quoteSnapshot();
+      const rows = scanRows(snapshot.cashQuotes);
       const hits = rows
         .filter((r) => r.changeFromOpen >= data.minUp && r.turnoverCr >= data.minTurnoverCr && r.volRatio >= data.minVolRatio)
         .sort((a, b) => b.changeFromOpen - a.changeFromOpen);
-      return { rows: hits, scanned: symbols.length, fnoExcluded: fnoCount, at: new Date().toISOString(), error: null as string | null };
+      return { rows: hits, scanned: snapshot.cash.covered, fnoExcluded: snapshot.fnoExcluded, at: snapshot.at, error: snapshot.error };
     } catch (e) {
       console.error(e);
       return { rows: [] as ScanRow[], scanned: 0, fnoExcluded: 0, at: new Date().toISOString(), error: "Market data abhi available nahi hai, thodi der baad try karein." };
