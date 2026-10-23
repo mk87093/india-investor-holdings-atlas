@@ -1,7 +1,15 @@
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 import { safeNewsUrl, type NewsArticle, type NewsSource } from "./news";
 
-const plainText = (v: unknown): string => typeof v === "string" ? v.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() : typeof v === "number" ? String(v) : "";
+const plainText = (v: unknown): string => {
+  if (typeof v !== "string") return typeof v === "number" ? String(v) : "";
+  const entities: Record<string, string> = { amp: "&", quot: '"', apos: "'", lt: "<", gt: ">", nbsp: " ", rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“", ndash: "–", mdash: "—" };
+  return v.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity: string) => {
+    if (!entity.startsWith("#")) return entities[entity] ?? match;
+    const n = entity.startsWith("#x") ? parseInt(entity.slice(2), 16) : parseInt(entity.slice(1), 10);
+    return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : match;
+  }).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+};
 const array = (v: unknown): unknown[] => v == null ? [] : Array.isArray(v) ? v : [v];
 const record = (v: unknown): Record<string, unknown> => typeof v === "object" && v !== null ? v as Record<string, unknown> : {};
 

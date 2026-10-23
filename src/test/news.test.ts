@@ -23,6 +23,10 @@ describe("Market news", () => {
     expect(rows[0]?.url).toBe("https://example.com/policy");
     expect(rows[0]?.publishedAt).toBeNull();
   });
+  it("decodes publisher character entities", () => {
+    const rows = parseNewsFeed('<rss><channel><item><title>Board&amp;#39;s decision</title><link>https://example.com/release</link><description><![CDATA[Board&#39;s decision &amp; policy]]></description></item></channel></rss>', source);
+    expect(rows[0]?.summary).toBe("Board's decision & policy");
+  });
   it("rejects unsafe links and HTML masquerading as feeds", () => {
     expect(safeNewsUrl("javascript:alert(1)")).toBeNull();
     expect(parseNewsFeed('<rss><channel><item><title>Unsafe</title><link>javascript:alert(1)</link></item></channel></rss>', source)).toEqual([]);

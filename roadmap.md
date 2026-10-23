@@ -7,5 +7,5 @@
 - [x] Shared F&O and non-F&O cash market breadth above all scanners
 - [x] Verify scanner dashboard, breadth and chart flow
 - [x] Shared dashboard navigation for holdings, results, monthly flows and all three scanners; verify selected data opens below
-- [ ] Add market news with Indian, global, commodity, crypto, RBI and Fed sections and reliable sources
-- [ ] Verify live news, category/source filters, refresh and navigation
+- [x] Add market news with Indian, global, commodity, crypto, RBI and Fed sections and reliable sources
+- [x] Verify live news, category/source filters, refresh and navigation
