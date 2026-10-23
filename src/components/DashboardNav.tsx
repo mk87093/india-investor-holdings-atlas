@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BarChart3, CalendarDays, ChartCandlestick, Landmark, ScanLine, TrendingUp } from "lucide-react";
+import { BarChart3, CalendarDays, ChartCandlestick, Landmark, Newspaper, ScanLine, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const tabs = [
@@ -9,6 +9,7 @@ const tabs = [
   { to: "/reversal", label: "Reversal Screener", icon: TrendingUp },
   { to: "/three-candle", label: "3 Candle Scanner", icon: ChartCandlestick },
   { to: "/scanner", label: "Cash Scanner", icon: ScanLine },
+  { to: "/news", label: "Market News", icon: Newspaper },
 ] as const;
 
 export function DashboardNav() {
