@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MonthlyRouteImport } from './routes/monthly'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as ReversalRouteImport } from './routes/reversal'
 import { Route as ScannerRouteImport } from './routes/scanner'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const MonthlyRoute = MonthlyRouteImport.update({
   id: '/monthly',
   path: '/monthly',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResultsRoute = ResultsRouteImport.update({
@@ -63,6 +69,7 @@ const ApiPublicJobsRefreshStocksRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/monthly': typeof MonthlyRoute
+  '/news': typeof NewsRoute
   '/results': typeof ResultsRoute
   '/reversal': typeof ReversalRoute
   '/scanner': typeof ScannerRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/monthly': typeof MonthlyRoute
+  '/news': typeof NewsRoute
   '/results': typeof ResultsRoute
   '/reversal': typeof ReversalRoute
   '/scanner': typeof ScannerRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/monthly': typeof MonthlyRoute
+  '/news': typeof NewsRoute
   '/results': typeof ResultsRoute
   '/reversal': typeof ReversalRoute
   '/scanner': typeof ScannerRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/monthly'
+    | '/news'
     | '/results'
     | '/reversal'
     | '/scanner'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/monthly'
+    | '/news'
     | '/results'
     | '/reversal'
     | '/scanner'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/monthly'
+    | '/news'
     | '/results'
     | '/reversal'
     | '/scanner'
@@ -127,6 +139,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MonthlyRoute: typeof MonthlyRoute
+  NewsRoute: typeof NewsRoute
   ResultsRoute: typeof ResultsRoute
   ReversalRoute: typeof ReversalRoute
   ScannerRoute: typeof ScannerRoute
@@ -149,6 +162,13 @@ declare module '@tanstack/react-router' {
       path: '/monthly'
       fullPath: '/monthly'
       preLoaderRoute: typeof MonthlyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/results': {
@@ -199,6 +219,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MonthlyRoute: MonthlyRoute,
+  NewsRoute: NewsRoute,
   ResultsRoute: ResultsRoute,
   ReversalRoute: ReversalRoute,
   ScannerRoute: ScannerRoute,

@@ -6,4 +6,6 @@
 - [x] Cash scanner Buy/Sell table dashboard matching the supplied reference
 - [x] Shared F&O and non-F&O cash market breadth above all scanners
 - [x] Verify scanner dashboard, breadth and chart flow
-- [ ] Shared dashboard navigation for holdings, results, monthly flows and all three scanners; verify selected data opens below
+- [x] Shared dashboard navigation for holdings, results, monthly flows and all three scanners; verify selected data opens below
+- [x] Add market news with Indian, global, commodity, crypto, RBI and Fed sections and reliable sources
+- [x] Verify live news, category/source filters, refresh and navigation
