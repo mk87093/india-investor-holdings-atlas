@@ -26,7 +26,7 @@ export function ReversalBoard({ rows, buy, sectors }: { rows: FnoRow[]; buy: boo
         const pct = buy ? row.fromLowPct : row.fromHighPct;
         const hit = pct >= 1 && (row.volRatio ?? 0) >= 1;
         const expanded = open === row.symbol;
-        return <article key={row.symbol} className={`reversal-stock relative overflow-hidden rounded-lg border p-3 sm:p-4 ${hit ? "reversal-confirmed" : "border-border"}`}>
+        return <article id={`reversal-${buy ? "buy" : "sell"}-${row.symbol}`} key={row.symbol} className={`reversal-stock relative overflow-hidden rounded-lg border p-3 sm:p-4 ${hit ? "reversal-confirmed" : "border-border"}`}>
           <div className="relative flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-start gap-3"><span className="pt-1 font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span><div className="min-w-0"><h3 className="break-words font-mono text-base font-semibold">{row.symbol}</h3><p className="mt-1 break-words text-xs text-muted-foreground">{sectors[row.symbol] || "Sector unavailable"}</p></div></div>
             <span className={`shrink-0 rounded border px-2 py-1 font-mono text-xs ${hit ? "border-current/40 bg-reversal-tone/10 text-reversal-tone" : "border-border text-muted-foreground"}`}>{buy ? "BULL" : "BEAR"}{hit && " •"}</span>
