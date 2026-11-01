@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Reversal Screener: preserve stocks/rules, add sectors and reference-inspired animated design; verify charts and layout
 - [x] FII/DII rankings, filters, sector chart, stock pages, results calendar
 - [x] Real data (screener.in + Yahoo)
 - [x] All ~2600 NSE stocks stored in database, refreshed by a background job (5 stocks/minute)

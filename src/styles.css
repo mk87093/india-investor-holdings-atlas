@@ -53,6 +53,8 @@
   --color-chart-5: var(--chart-5);
   --color-gain: var(--gain);
   --color-loss: var(--loss);
+  --color-reversal-tone: var(--reversal-tone);
+  --color-terminal: var(--terminal);
   --font-sans: 'IBM Plex Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --color-sidebar: var(--sidebar);
@@ -66,6 +68,9 @@
 }
 
 :root {
+  --terminal: oklch(0.13 0.007 170);
+  --terminal-card: oklch(0.17 0.01 170);
+  --terminal-glow: 0 0 18px color-mix(in oklab, var(--reversal-tone) 12%, transparent);
   --radius: 0.625rem;
   --gain: oklch(0.72 0.17 152);
   --loss: oklch(0.65 0.21 25);
@@ -148,3 +153,15 @@
     color: var(--color-foreground);
   }
 }
+
+.reversal-terminal { background: var(--terminal); }
+.reversal-buy { --reversal-tone: var(--gain); }
+.reversal-sell { --reversal-tone: var(--loss); }
+.reversal-stock { background: var(--terminal-card); transition: border-color 180ms, box-shadow 180ms; }
+.reversal-stock:hover { border-color: var(--reversal-tone); box-shadow: var(--terminal-glow); }
+.reversal-confirmed { border-color: color-mix(in oklab, var(--reversal-tone) 45%, var(--border)); box-shadow: var(--terminal-glow); }
+.reversal-confirmed::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--reversal-tone) 8%, transparent) 50%, transparent 100%); height: 50%; animation: reversal-scan 7s linear infinite; }
+.reversal-beacon { animation: reversal-pulse 2.5s ease-in-out infinite; }
+@keyframes reversal-scan { from { transform: translateY(-100%); } to { transform: translateY(200%); } }
+@keyframes reversal-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .reversal-confirmed::before, .reversal-beacon { animation: none; } .reversal-stock { transition: none; } }
