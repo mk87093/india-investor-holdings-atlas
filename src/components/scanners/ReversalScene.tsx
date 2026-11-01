@@ -66,7 +66,7 @@ export function ReversalScene({ up, down, sectors }: { up: FnoRow[]; down: FnoRo
         const pulse=new T.Mesh(new T.SphereGeometry(.045,8,8),new T.MeshBasicMaterial({color}));group.add(pulse);pulses.push({mesh:pulse,curve,offset:i/10});
       };
       up.slice(0,10).forEach((r,i)=>addStock(r,i,true)); down.slice(0,10).forEach((r,i)=>addStock(r,i,false));
-      const resize = () => { const w=element.clientWidth,h=element.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.position.set(0,1,w<600?40:23);camera.lookAt(0,0,-1);camera.updateProjectionMatrix(); };
+      const resize = () => { const w=element.clientWidth,h=element.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.position.set(0,1,w<600?24:17);camera.lookAt(0,0,-1);camera.updateProjectionMatrix(); };
       const observer=new ResizeObserver(resize);observer.observe(element);resize();
       const pointer=new T.Vector2(); const raycaster=new T.Raycaster(); let mouseX=0,mouseY=0;
       const move=(e:PointerEvent)=>{const rect=element.getBoundingClientRect();mouseX=(e.clientX-rect.left)/rect.width-.5;mouseY=(e.clientY-rect.top)/rect.height-.5;};
