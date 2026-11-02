@@ -62,13 +62,14 @@ export function ReversalScene({ up, down, sectors }: { up: FnoRow[]; down: FnoRo
         c.strokeStyle = color; c.lineWidth = 6; c.strokeRect(3, 3, 514, 194);
         c.fillStyle = muted; c.font = "20px monospace"; c.fillText(`#${i + 1}`, 18, 34);
         c.fillStyle = color; c.font = "bold 20px monospace"; c.fillText(buy ? "BUY" : "SELL", 440, 34);
-        c.fillStyle = foreground; c.font = "bold 44px monospace";
+        c.fillStyle = foreground; c.font = "bold 64px monospace";
         while (c.measureText(row.symbol).width > 484) { const size = Number.parseInt(c.font.replace("bold ", "")); c.font = `bold ${size - 1}px monospace`; }
         c.fillText(row.symbol, 18, 90);
         const pct = buy ? row.fromLowPct : row.fromHighPct;
-        c.fillStyle = color; c.font = "bold 36px monospace"; c.fillText(`${buy ? "▲ +" : "▼ -"}${Math.abs(pct).toFixed(2)}%`, 18, 145);
-        c.fillStyle = muted; c.font = "20px monospace"; c.fillText(buy ? "FROM LOW" : "FROM HIGH", 300, 143);
-        c.fillText(`LTP ${row.ltp.toFixed(2)}  ${(sectors[row.symbol] || "").slice(0, 18)}`, 18, 182);
+        c.fillStyle = color; c.font = "bold 38px monospace"; c.fillText(`${buy ? "▲ +" : "▼ -"}${Math.abs(pct).toFixed(2)}%`, 18, 133);
+        c.fillStyle = muted; c.font = "22px monospace"; c.fillText(buy ? "FROM LOW" : "FROM HIGH", 300, 131);
+        c.fillStyle = foreground; c.font = "22px monospace"; c.fillText(`LTP ${row.ltp.toFixed(2)}`, 18, 163);
+        c.fillStyle = muted; c.font = "18px monospace"; c.fillText(sectors[row.symbol] || "Sector unavailable", 18, 187, 484);
         const texture = new T.CanvasTexture(canvas); texture.colorSpace = T.SRGBColorSpace; textures.push(texture);
         const side = new T.MeshBasicMaterial({ color, transparent: true, opacity: .55 });
         const face = new T.MeshBasicMaterial({ map: texture });
