@@ -7,6 +7,8 @@ import { ReversalScene } from "@/components/scanners/ReversalScene";
 import { supabase } from "@/integrations/supabase/client";
 import { ScannerNav } from "@/components/scanners/ScannerNav";
 import { useFnoScan } from "@/components/scanners/useFnoScan";
+import { useMemo } from "react";
+import { rankReversals } from "@/lib/reversal-layout";
 
 export const Route = createFileRoute("/reversal")({
   head: () => ({
@@ -39,8 +41,8 @@ function Page() {
     },
   });
   const s = data?.stocks ?? [];
-  const up = [...s].sort((a, b) => b.fromLowPct - a.fromLowPct).slice(0, 20);
-  const dn = [...s].sort((a, b) => b.fromHighPct - a.fromHighPct).slice(0, 20);
+  const up = useMemo(() => rankReversals(data?.stocks ?? [], true), [data]);
+  const dn = useMemo(() => rankReversals(data?.stocks ?? [], false), [data]);
   return (
     <main className="reversal-terminal min-h-screen"><div className="mx-auto max-w-7xl space-y-5 px-4 py-6">
       <ScannerNav />
