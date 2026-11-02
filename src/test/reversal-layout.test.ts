@@ -10,8 +10,8 @@ describe("Reversal box layout", () => {
     expect(rankReversals(stocks, false)).toHaveLength(30);
   });
   it("preserves descending reversal ranking without changing input stocks", () => {
-    expect(rankReversals(stocks, true)[0].symbol).toBe("S39");
-    expect(rankReversals(stocks, false)[0].symbol).toBe("S0");
-    expect(stocks[0].symbol).toBe("S0");
+    expect(rankReversals(stocks, true)[0]?.symbol).toBe("S39");
+    expect(rankReversals(stocks, false)[0]?.symbol).toBe("S0");
+    expect(stocks[0]?.symbol).toBe("S0");
   });
 });
