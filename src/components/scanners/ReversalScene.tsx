@@ -24,16 +24,16 @@ export function ReversalScene({ up, down, sectors }: { up: FnoRow[]; down: FnoRo
           <text x={W - 12} y={22} textAnchor="end" className="fill-muted-foreground font-mono" fontSize={11}>CLICK A STOCK FOR 5M CHART</text>
           <line x1={cx} x2={cx} y1={TOP - 10} y2={H - 10} className="stroke-foreground" strokeOpacity={.5} filter="url(#neon)" />
           {flows.map((f, i) => { const pos = f.pct >= 0; const d = curve(12 + SEC_W, secY(i), cx, cy); return <g key={f.name} className={pos ? "text-gain" : "text-loss"}>
-            <path d={d} fill="none" stroke="currentColor" strokeOpacity={.35} strokeWidth={1.2} />
-            <path d={d} fill="none" stroke="currentColor" strokeWidth={2.5} className="neon-flow" filter="url(#neon)" style={{ animationDelay: `${-i * .4}s` }} />
+            <path d={d} pointerEvents="none" fill="none" stroke="currentColor" strokeOpacity={.35} strokeWidth={1.2} />
+            <path d={d} pointerEvents="none" fill="none" stroke="currentColor" strokeWidth={2.5} className="neon-flow" filter="url(#neon)" style={{ animationDelay: `${-i * .4}s` }} />
             <rect x={12} y={secY(i) - 11} width={SEC_W} height={22} className="fill-background" fillOpacity={.6} /><rect x={12} y={secY(i) - 11} width={3} height={22} fill="currentColor" />
             <text x={22} y={secY(i) + 4} fontSize={11} className="fill-foreground font-mono">{f.name.slice(0, 16)}</text>
             <text x={12 + SEC_W - 6} y={secY(i) + 4} fontSize={11} textAnchor="end" fill="currentColor" className="font-mono">{pos ? "+" : ""}{f.pct.toFixed(2)}%</text>
           </g>; })}
           {stocks.map(({ row, buy }, i) => { const y = TOP + i * ROW + ROW / 2, x = W - 12 - BOX_W; const d = curve(cx, cy, x, y); const pct = buy ? row.fromLowPct : -row.fromHighPct;
             return <g key={`${buy}-${row.symbol}`} className={`${buy ? "text-gain" : "text-loss"} cursor-pointer`} role="button" tabIndex={0} aria-label={`Open ${row.symbol} 5-min chart`} onClick={() => setSelected({ row, buy })} onKeyDown={e => { if (e.key === "Enter") setSelected({ row, buy }); }}>
-              <path d={d} fill="none" stroke="currentColor" strokeOpacity={.3} />
-              <path d={d} fill="none" stroke="currentColor" strokeWidth={2.5} className="neon-flow" filter="url(#neon)" style={{ animationDelay: `${-i * .2}s` }} />
+              <path d={d} pointerEvents="none" fill="none" stroke="currentColor" strokeOpacity={.3} />
+              <path d={d} pointerEvents="none" fill="none" stroke="currentColor" strokeWidth={2.5} className="neon-flow" filter="url(#neon)" style={{ animationDelay: `${-i * .2}s` }} />
               <rect x={x} y={y - 11} width={BOX_W} height={22} rx={2} className="fill-background" stroke="currentColor" strokeOpacity={.6} />
               <text x={x + 6} y={y + 4} fontSize={10} fill="currentColor" className="font-mono">{String(i % REVERSAL_BOX_COUNT + 1).padStart(2, "0")}</text>
               <rect x={x + 24} y={y - 7} width={34} height={14} fill="currentColor" /><text x={x + 41} y={y + 4} fontSize={9} textAnchor="middle" className="fill-background font-mono font-bold">{buy ? "BULL" : "BEAR"}</text>
