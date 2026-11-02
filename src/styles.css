@@ -155,7 +155,10 @@
 }
 
 .reversal-terminal { background: var(--terminal); }
-.reversal-scene { width: 100%; min-width: 1450px; height: 1450px; cursor: pointer; }
+.reversal-scene { width: 100%; min-width: 900px; }
+@keyframes neon-flow { to { stroke-dashoffset: -120; } }
+.neon-flow { stroke-dasharray: 6 114; animation: neon-flow 3s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .neon-flow { animation: none; } }
 .reversal-scene canvas { display: block; width: 100%; height: 100%; }
 .reversal-buy { --reversal-tone: var(--gain); }
 .reversal-sell { --reversal-tone: var(--loss); }
