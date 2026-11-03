@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -26,7 +27,9 @@ const monthName = (m: string) => new Date(m + "-01T00:00:00Z").toLocaleDateStrin
 function Monthly() {
   const fn = useServerFn(getFlows);
   const { data, isLoading, isError } = useQuery({ queryKey: ["flows"], queryFn: () => fn(), staleTime: 10 * 60 * 1000 });
+  const [openMonth, setOpenMonth] = useState<string | null>(null);
   const th = "p-3 text-right";
+  const fmtDate = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       <Link to="/" className="text-sm text-muted-foreground hover:text-primary">← Institutional Holdings</Link>
