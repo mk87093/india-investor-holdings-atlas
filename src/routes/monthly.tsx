@@ -50,24 +50,65 @@ function Monthly() {
           </section>
 
           <h2 className="mb-3 mt-10 text-xl font-semibold">Month-wise</h2>
+          <p className="mb-3 text-xs text-muted-foreground">Click a month to see every trading day's FII/DII data for that month.</p>
           <div className="overflow-x-auto rounded-xl border border-border bg-card">
             <table className="w-full text-sm">
               <thead className="border-b border-border text-left font-mono text-xs uppercase text-muted-foreground">
                 <tr><th className="p-3">Month</th><th className={th}>Days</th><th className={th}>FII buy</th><th className={th}>FII sell</th><th className={th}>FII net</th><th className={th}>DII buy</th><th className={th}>DII sell</th><th className={th}>DII net</th></tr>
               </thead>
               <tbody>
-                {data.months.map((m) => (
-                  <tr key={m.month} className="border-b border-border/50 last:border-0">
-                    <td className="p-3 font-semibold">{monthName(m.month)}</td>
-                    <td className="p-3 text-right font-mono">{m.days}</td>
-                    <td className="p-3 text-right font-mono">{Math.round(m.fiiBuy).toLocaleString("en-IN")}</td>
-                    <td className="p-3 text-right font-mono">{Math.round(m.fiiSell).toLocaleString("en-IN")}</td>
-                    <td className={cn("p-3 text-right font-mono font-semibold", tone(m.fii))}>{cr(m.fii)}</td>
-                    <td className="p-3 text-right font-mono">{Math.round(m.diiBuy).toLocaleString("en-IN")}</td>
-                    <td className="p-3 text-right font-mono">{Math.round(m.diiSell).toLocaleString("en-IN")}</td>
-                    <td className={cn("p-3 text-right font-mono font-semibold", tone(m.dii))}>{cr(m.dii)}</td>
-                  </tr>
-                ))}
+                {data.months.map((m) => {
+                  const open = openMonth === m.month;
+                  const days = data.days.filter((d) => d.date.slice(0, 7) === m.month);
+                  return (
+                    <Fragment key={m.month}>
+                      <tr
+                        onClick={() => setOpenMonth(open ? null : m.month)}
+                        className={cn("cursor-pointer border-b border-border/50 transition-colors hover:bg-primary/5", open && "bg-primary/10")}
+                        aria-expanded={open}
+                      >
+                        <td className="p-3 font-semibold">
+                          <span className="mr-2 inline-block text-muted-foreground">{open ? "▾" : "▸"}</span>
+                          {monthName(m.month)}
+                        </td>
+                        <td className="p-3 text-right font-mono">{m.days}</td>
+                        <td className="p-3 text-right font-mono">{Math.round(m.fiiBuy).toLocaleString("en-IN")}</td>
+                        <td className="p-3 text-right font-mono">{Math.round(m.fiiSell).toLocaleString("en-IN")}</td>
+                        <td className={cn("p-3 text-right font-mono font-semibold", tone(m.fii))}>{cr(m.fii)}</td>
+                        <td className="p-3 text-right font-mono">{Math.round(m.diiBuy).toLocaleString("en-IN")}</td>
+                        <td className="p-3 text-right font-mono">{Math.round(m.diiSell).toLocaleString("en-IN")}</td>
+                        <td className={cn("p-3 text-right font-mono font-semibold", tone(m.dii))}>{cr(m.dii)}</td>
+                      </tr>
+                      {open && (
+                        <tr className="border-b border-border/50 bg-background/60">
+                          <td colSpan={8} className="p-0">
+                            <div className="overflow-x-auto px-2 py-3">
+                              <table className="w-full text-xs">
+                                <thead className="border-b border-border text-left font-mono uppercase text-muted-foreground">
+                                  <tr><th className="p-2">Date</th><th className={th}>FII buy</th><th className={th}>FII sell</th><th className={th}>FII net</th><th className={th}>DII buy</th><th className={th}>DII sell</th><th className={th}>DII net</th></tr>
+                                </thead>
+                                <tbody>
+                                  {days.map((d) => (
+                                    <tr key={d.date} className="border-b border-border/30 last:border-0">
+                                      <td className="p-2 font-mono">{fmtDate(d.date)}</td>
+                                      <td className="p-2 text-right font-mono">{d.fiiBuy == null ? "—" : Math.round(d.fiiBuy).toLocaleString("en-IN")}</td>
+                                      <td className="p-2 text-right font-mono">{d.fiiSell == null ? "—" : Math.round(d.fiiSell).toLocaleString("en-IN")}</td>
+                                      <td className={cn("p-2 text-right font-mono font-semibold", tone(d.fii))}>{cr(d.fii)}</td>
+                                      <td className="p-2 text-right font-mono">{d.diiBuy == null ? "—" : Math.round(d.diiBuy).toLocaleString("en-IN")}</td>
+                                      <td className="p-2 text-right font-mono">{d.diiSell == null ? "—" : Math.round(d.diiSell).toLocaleString("en-IN")}</td>
+                                      <td className={cn("p-2 text-right font-mono font-semibold", tone(d.dii))}>{cr(d.dii)}</td>
+                                    </tr>
+                                  ))}
+                                  {days.length === 0 && <tr><td colSpan={7} className="p-4 text-center text-muted-foreground">No daily data for this month yet.</td></tr>}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
                 {data.months.length === 0 && <tr><td colSpan={8} className="p-6 text-center text-muted-foreground">No data yet.</td></tr>}
               </tbody>
             </table>
