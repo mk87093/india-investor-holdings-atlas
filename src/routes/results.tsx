@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles } from "lucide-react";
@@ -52,8 +52,8 @@ function Table({ list, upcoming }: { list: OverviewRow[]; upcoming: boolean }) {
             const ry = yoy(r.sales, r.salesYoY), py = yoy(r.profit, r.profitYoY);
             const isOpen = open === r.symbol;
             return (
-              <>
-                <tr key={r.symbol} className="border-b border-border/50 hover:bg-accent">
+              <Fragment key={r.symbol}>
+                <tr className="border-b border-border/50 hover:bg-accent">
                   <td className="p-3 font-mono">{r.resultDate ? fmt(r.resultDate) : "—"}</td>
                   <td className="p-3"><Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="font-semibold text-primary">{r.symbol}</Link>
                     <span className="block text-xs text-muted-foreground">{r.name}</span></td>
@@ -67,7 +67,7 @@ function Table({ list, upcoming }: { list: OverviewRow[]; upcoming: boolean }) {
                     <Sparkles className="size-3" />{isOpen ? "Hide" : "AI Summary"}</button></td>
                 </tr>
                 {isOpen && <tr key={r.symbol + "-ai"} className="border-b border-border/50 bg-primary/5"><td colSpan={8} className="p-4"><AiSummary r={r} upcoming={upcoming} /></td></tr>}
-              </>
+              </Fragment>
             );
           })}
         </tbody>
