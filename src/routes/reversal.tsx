@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { RefreshCw, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReversalBoard } from "@/components/scanners/ReversalBoard";
 import { ReversalScene } from "@/components/scanners/ReversalScene";
 import { supabase } from "@/integrations/supabase/client";
 import { ScannerNav } from "@/components/scanners/ScannerNav";
@@ -57,9 +56,7 @@ function Page() {
       </div>
       {data?.error && <p className="rounded-md border border-loss/50 bg-loss/10 p-3 text-sm">{data.error}</p>}
       {s.length > 0 && <ReversalScene up={up} down={dn} sectors={sectors} />}
-      {!data ? <p className="text-sm text-muted-foreground">Scanning ~200 F&O stocks...</p> : (
-        <div className="grid items-start gap-6 md:grid-cols-2"><ReversalBoard rows={up} buy sectors={sectors} /><ReversalBoard rows={dn} buy={false} sectors={sectors} /></div>
-      )}
+      {!data && <p className="text-sm text-muted-foreground">Scanning ~200 F&O stocks...</p>}
     </div></main>
   );
 }
