@@ -30,12 +30,12 @@ export function CashSignalTable({ title, items, side, chart, loading }: {
           </thead>
           <tbody>
             {items.map(({ r, s }, i) => <Fragment key={r.symbol}>
-              <tr className="border-t border-border hover:bg-muted/50">
+              <tr className={`cursor-pointer border-t border-border hover:bg-muted/50 ${open === r.symbol ? "bg-muted/40" : ""}`} onClick={() => setOpen(open === r.symbol ? null : r.symbol)} aria-expanded={open === r.symbol}>
                 <td className="p-2 text-muted-foreground">{i + 1}</td>
                 <td className="p-2 font-semibold" title={r.name}>{r.symbol}</td>
                 {side ? <><td className={`p-2 font-bold ${tone}`}>{side}</td><td className="p-2 font-mono">{s ? fmt(s.level) : "—"}</td><td className="p-2 font-mono">{s ? fmt(s.price) : "—"}</td><td className="p-2 font-mono">{s ? istTime(s.signalTime) : "—"}</td></> : <><td className="p-2 font-mono text-gain">+{fmt(r.changeFromOpen)}%</td><td className="p-2 font-mono">{fmt(r.turnoverCr)}</td><td className="p-2 font-mono">{fmt(r.volRatio)}×</td></>}
                 <td className="p-2 font-mono">{fmt(r.price)}</td>
-                <td className="p-2"><Button variant="outline" size="sm" className="hover:text-foreground" aria-label={`${open === r.symbol ? "Hide" : "Show"} chart for ${r.symbol}`} aria-expanded={open === r.symbol} onClick={() => setOpen(open === r.symbol ? null : r.symbol)}>{open === r.symbol ? <ChevronUp /> : <ChevronDown />}{open === r.symbol ? "Hide" : "Chart"}</Button></td>
+                <td className="p-2"><Button variant="outline" size="sm" className="hover:text-foreground" aria-label={`${open === r.symbol ? "Hide" : "Show"} chart for ${r.symbol}`} aria-expanded={open === r.symbol} onClick={(e) => { e.stopPropagation(); setOpen(open === r.symbol ? null : r.symbol); }}>{open === r.symbol ? <ChevronUp /> : <ChevronDown />}{open === r.symbol ? "Hide" : "Chart"}</Button></td>
               </tr>
               {open === r.symbol && <tr><td colSpan={side ? 8 : 7} className="border-t border-border bg-muted/30 p-2">{chart(r.symbol, side)}<Link to="/stock/$symbol" params={{ symbol: r.symbol }} className="mt-2 inline-block text-xs text-primary hover:underline">FII/DII & fundamentals →</Link></td></tr>}
             </Fragment>)}
