@@ -91,7 +91,6 @@ function ScannerPage() {
       <header className="mb-6 mt-2">
         <p className="font-mono text-xs uppercase tracking-widest text-primary">NSE · Cash only · No F&O</p>
         <h1 className="text-3xl font-bold tracking-tight">Cash Momentum Scanner</h1>
-        <p className="text-sm text-muted-foreground">Open se {minUp}%+ up, turnover ₹{minTurnoverCr} Cr+, volume {minVolRatio}x average. Breakout = 3-candle setup ka breakout (5-min chart). Stock par tap karke chart dekhein. Source: Yahoo Finance (thoda delay ho sakta hai).</p>
       </header>
       <section className="mb-6 flex flex-wrap items-end gap-4 border-y border-border py-4">
         <Num label="Min % up (from open)" value={minUp} set={setMinUp} />

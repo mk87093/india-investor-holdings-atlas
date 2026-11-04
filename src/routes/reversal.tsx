@@ -49,7 +49,6 @@ function Page() {
         <div><div className="mb-2 flex items-center gap-2 font-mono text-xs text-muted-foreground"><Activity className="size-4 text-gain" />NSE / F&O</div><h1 className="text-2xl font-bold">F&O Reversal Screener</h1></div>
         <Button onClick={scan} disabled={busy} variant="outline"><RefreshCw className={busy ? "animate-spin motion-reduce:animate-none" : ""} />{busy ? "Scanning..." : "Scan now"}</Button>
       </div>
-      <p className="text-xs text-muted-foreground">Highlighted = 1%+ reversal with volume above trend</p>
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         {data && <span>Scanned {data.scanned}/{data.total} · {new Date(data.at).toLocaleTimeString("en-IN")}</span>}
 

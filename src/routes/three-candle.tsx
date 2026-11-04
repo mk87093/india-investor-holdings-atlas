@@ -29,7 +29,6 @@ function Table({ items, buy }: { items: Item[]; buy: boolean }) {
     <div className="min-w-0 rounded-lg border border-border bg-card">
       <div className={`border-b border-border px-4 py-3 font-semibold ${buy ? "text-gain" : "text-loss"}`}>
         {buy ? "Buy" : "Sell"} signals ({items.length})
-        <div className="text-xs font-normal text-muted-foreground">{buy ? "Close above body high of green candle before 3+ reds (or 2 big reds)" : "Close below body low of red candle before 3+ greens (or 2 big greens)"}</div>
       </div>
       <div className="max-h-[70vh] overflow-auto">
         <table className="w-full text-sm">
@@ -73,7 +72,6 @@ function Page() {
     <main className="mx-auto max-w-7xl space-y-4 px-4 py-8">
       <ScannerNav />
       <h1 className="text-2xl font-bold">3 Candle Scanner</h1>
-      <p className="text-sm text-muted-foreground">Buy/Sell signals in listing order — up to 2 signals per side per stock per day (2nd BUY setup below the 1st, 2nd SELL setup above the 1st). Big candle = body at least 1.5× the day's average. Row par click karke chart dekhein.</p>
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         {data && <span>Scanned {data.scanned}/{data.total} · {new Date(data.at).toLocaleTimeString("en-IN")}</span>}
         <button onClick={scan} disabled={busy} className="rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground disabled:opacity-60">{busy ? "Scanning..." : "Scan now"}</button>
