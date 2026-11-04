@@ -114,23 +114,6 @@ function Monthly() {
             </table>
           </div>
 
-          <h2 className="mb-3 mt-10 text-xl font-semibold">Daily</h2>
-          <div className="overflow-x-auto rounded-xl border border-border bg-card">
-            <table className="w-full text-sm">
-              <thead className="border-b border-border text-left font-mono text-xs uppercase text-muted-foreground">
-                <tr><th className="p-3">Date</th><th className={th}>FII net</th><th className={th}>DII net</th></tr>
-              </thead>
-              <tbody>
-                {data.days.slice(0, 60).map((d) => (
-                  <tr key={d.date} className="border-b border-border/50 last:border-0">
-                    <td className="p-3 font-mono">{new Date(d.date + "T00:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}</td>
-                    <td className={cn("p-3 text-right font-mono", tone(d.fii))}>{cr(d.fii)}</td>
-                    <td className={cn("p-3 text-right font-mono", tone(d.dii))}>{cr(d.dii)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </>
       )}
     </main>
