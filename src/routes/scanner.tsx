@@ -45,7 +45,7 @@ function Num({ label, value, set }: { label: string; value: number; set: (n: num
 function ScannerPage() {
   const scanFn = useServerFn(runCashScan);
   const candlesFn = useServerFn(getCandles);
-  const [minUp, setMinUp] = useState(3);
+  const [minUp, setMinUp] = useState(0);
   const [minTurnoverCr, setMinT] = useState(5);
   const [minVolRatio, setMinV] = useState(2);
   const [auto, setAuto] = useState(true);
