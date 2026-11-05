@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Activity } from "lucide-react";
 import { BarChart3, CalendarDays, ChartCandlestick, Landmark, Newspaper, ScanLine, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import bullImg from "@/assets/bull-3d.png";
+import bearImg from "@/assets/bear-3d.png";
 
 const tabs = [
   { to: "/", label: "Institutional Holdings", icon: Landmark },
@@ -45,17 +46,41 @@ export function DashboardNav() {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 pt-4">
-        <Link to="/" className="group flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-xl border border-primary/40 bg-primary/10 shadow-[0_0_24px_-4px_var(--primary)] transition-shadow group-hover:shadow-[0_0_32px_-2px_var(--primary)]" aria-hidden="true">
-            <Activity className="size-6 text-primary" />
+        <Link to="/" className="mithun-brand group">
+          <span className="flex flex-col items-center">
+            <img
+              src={bullImg}
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              width={816}
+              height={816}
+              className="mithun-beast mithun-beast-bull"
+            />
+            <span className="mithun-beast-label mithun-beast-label-bull">Bull</span>
           </span>
-          <span>
-            <span className="mithun-wordmark block bg-gradient-to-r from-primary via-foreground to-gain bg-clip-text text-2xl font-bold tracking-[0.18em] text-transparent">
+
+          <span className="flex min-w-0 flex-col items-center px-1">
+            <span className="mithun-wordmark text-2xl font-black leading-none tracking-[0.2em] sm:text-3xl">
               MITHUN
             </span>
-            <span className="block font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+            <span className="mithun-rule mt-2 w-40 max-w-full" aria-hidden="true" />
+            <span className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.34em] text-muted-foreground">
               Market Screener
             </span>
+          </span>
+
+          <span className="flex flex-col items-center">
+            <img
+              src={bearImg}
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              width={816}
+              height={816}
+              className="mithun-beast mithun-beast-bear"
+            />
+            <span className="mithun-beast-label mithun-beast-label-bear">Bear</span>
           </span>
         </Link>
         <MarketClock />
