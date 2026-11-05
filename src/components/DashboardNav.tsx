@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { BarChart3, CalendarDays, ChartCandlestick, Landmark, Newspaper, ScanLine, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { IndexTicker } from "@/components/IndexTicker";
 import bullImg from "@/assets/bull-3d.png";
 import bearImg from "@/assets/bear-3d.png";
 
@@ -85,6 +86,7 @@ export function DashboardNav() {
         </Link>
         <MarketClock />
       </div>
+      <IndexTicker />
       <nav aria-label="Dashboard navigation" className="mx-auto grid max-w-7xl grid-cols-2 gap-2 px-4 py-4 sm:grid-cols-3 lg:flex lg:flex-wrap">
         {tabs.map(({ to, label, icon: Icon }) => (
           <Button key={to} asChild variant="outline" className="h-auto min-h-10 justify-start whitespace-normal text-left hover:text-foreground">
