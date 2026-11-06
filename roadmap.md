@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Add Global Indices tab with real quotes for indices, bonds, commodities, crypto and USD/INR; verify navigation, refresh and mobile display
 - [x] Reversal: enlarge 3D boxes, show six rows of five on each side, open selected stock's 5-minute chart on box click, and verify
 - [x] Improve stock-name legibility using the uploaded video reference
 - [x] Add and verify actual interactive 3D depth/motion to Reversal Screener without changing scan rules

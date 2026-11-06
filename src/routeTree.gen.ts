@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GlobalRouteImport } from './routes/global'
 import { Route as MonthlyRouteImport } from './routes/monthly'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ResultsRouteImport } from './routes/results'
@@ -22,6 +23,11 @@ import { Route as ApiPublicJobsRefreshStocksRouteImport } from './routes/api/pub
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlobalRoute = GlobalRouteImport.update({
+  id: '/global',
+  path: '/global',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MonthlyRoute = MonthlyRouteImport.update({
@@ -68,6 +74,7 @@ const ApiPublicJobsRefreshStocksRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/global': typeof GlobalRoute
   '/monthly': typeof MonthlyRoute
   '/news': typeof NewsRoute
   '/results': typeof ResultsRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/global': typeof GlobalRoute
   '/monthly': typeof MonthlyRoute
   '/news': typeof NewsRoute
   '/results': typeof ResultsRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/global': typeof GlobalRoute
   '/monthly': typeof MonthlyRoute
   '/news': typeof NewsRoute
   '/results': typeof ResultsRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/global'
     | '/monthly'
     | '/news'
     | '/results'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/global'
     | '/monthly'
     | '/news'
     | '/results'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/global'
     | '/monthly'
     | '/news'
     | '/results'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GlobalRoute: typeof GlobalRoute
   MonthlyRoute: typeof MonthlyRoute
   NewsRoute: typeof NewsRoute
   ResultsRoute: typeof ResultsRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/global': {
+      id: '/global'
+      path: '/global'
+      fullPath: '/global'
+      preLoaderRoute: typeof GlobalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/monthly': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GlobalRoute: GlobalRoute,
   MonthlyRoute: MonthlyRoute,
   NewsRoute: NewsRoute,
   ResultsRoute: ResultsRoute,

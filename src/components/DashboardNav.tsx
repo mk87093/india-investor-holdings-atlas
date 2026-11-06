@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { BarChart3, CalendarDays, ChartCandlestick, Landmark, Newspaper, ScanLine, TrendingUp } from "lucide-react";
+import { BarChart3, CalendarDays, ChartCandlestick, Globe2, Landmark, Newspaper, ScanLine, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IndexTicker } from "@/components/IndexTicker";
 import bullImg from "@/assets/bull-3d.png";
@@ -14,6 +14,7 @@ const tabs = [
   { to: "/three-candle", label: "3 Candle Scanner", icon: ChartCandlestick },
   { to: "/scanner", label: "Cash Scanner", icon: ScanLine },
   { to: "/news", label: "Market News", icon: Newspaper },
+  { to: "/global", label: "Global Indices", icon: Globe2 },
 ] as const;
 
 function MarketClock() {

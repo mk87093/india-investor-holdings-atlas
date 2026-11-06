@@ -15,9 +15,9 @@ async function getSession() {
   return session;
 }
 
-export async function yget(path: string): Promise<any> {
+export async function yget(path: string, ttlMs = TTL): Promise<any> {
   const hit = cache.get(path);
-  if (hit && Date.now() - hit.at < TTL) return hit.data;
+  if (hit && Date.now() - hit.at < ttlMs) return hit.data;
   for (let attempt = 0; attempt < 2; attempt++) {
     const s = await getSession();
     const url = `https://query2.finance.yahoo.com${path}${path.includes("?") ? "&" : "?"}crumb=${encodeURIComponent(s.crumb)}`;
